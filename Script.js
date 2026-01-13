@@ -4,13 +4,16 @@ const disk = document.getElementById('disk');
 
 playBtn.addEventListener('click', () => {
     if (audio.paused) {
-        audio.play();
-        playBtn.innerText = 'Pause';
-        disk.classList.add('play-animation');
+        audio.play().then(() => {
+            playBtn.innerText = 'PAUSE';
+            disk.classList.add('play-animation');
+        }).catch(error => {
+            console.log("Playback failed:", error);
+            alert("Please try again!");
+        });
     } else {
         audio.pause();
-        playBtn.innerText = 'Play';
+        playBtn.innerText = 'PLAY';
         disk.classList.remove('play-animation');
     }
 });
-
