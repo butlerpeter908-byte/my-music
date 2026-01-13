@@ -1,7 +1,7 @@
 body {
-    background: #121212;
-    color: white;
-    font-family: Arial, sans-serif;
+    background: #000000;
+    color: #ffffff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -9,23 +9,24 @@ body {
     margin: 0;
 }
 .player-container {
-    background: #1e1e1e;
-    padding: 30px;
-    border-radius: 20px;
+    background: #111111;
+    padding: 40px;
+    border-radius: 30px;
     text-align: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    width: 280px;
+    box-shadow: 0 0 20px rgba(255, 75, 43, 0.2);
+    width: 300px;
 }
 .disk {
-    width: 150px;
-    height: 150px;
+    width: 180px;
+    height: 180px;
     background: linear-gradient(45deg, #ff416c, #ff4b2b);
     border-radius: 50%;
-    margin: 0 auto 20px;
-    border: 5px solid #333;
+    margin: 0 auto 30px;
+    border: 8px solid #222;
+    transition: 0.5s;
 }
 .play-animation {
-    animation: rotate 3s linear infinite;
+    animation: rotate 4s linear infinite;
 }
 @keyframes rotate {
     from { transform: rotate(0deg); }
@@ -34,10 +35,14 @@ body {
 button {
     background: #ff4b2b;
     border: none;
-    padding: 10px 30px;
+    padding: 15px 40px;
     color: white;
     border-radius: 50px;
-    font-size: 18px;
+    font-size: 20px;
+    font-weight: bold;
     cursor: pointer;
+    box-shadow: 0 5px 15px rgba(255, 75, 43, 0.4);
 }
-
+button:active {
+    transform: scale(0.95);
+}
