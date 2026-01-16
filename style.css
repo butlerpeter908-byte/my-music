@@ -1,4 +1,4 @@
-/* Spotify Black Background */
+/* Spotify Dark Theme Base */
 body {
     background-color: #121212;
     color: white;
@@ -11,7 +11,7 @@ body {
     margin: 0;
 }
 
-/* Search Bar Design */
+/* Search Section */
 .search-container {
     margin-bottom: 30px;
     display: flex;
@@ -27,10 +27,12 @@ body {
     color: white;
     font-size: 14px;
     outline: none;
+    transition: 0.3s;
 }
 
 #search-input:focus {
     border-color: #1DB954;
+    background: #333;
 }
 
 #search-btn {
@@ -41,13 +43,17 @@ body {
     cursor: pointer;
     font-size: 18px;
     transition: 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 #search-btn:hover {
     transform: scale(1.1);
+    background: #1ed760;
 }
 
-/* Main Player Card */
+/* Player Card */
 .player-container {
     background: linear-gradient(to bottom, #282828, #121212);
     padding: 40px;
@@ -59,32 +65,42 @@ body {
 
 /* Album Art (Disk) */
 .disk {
-    width: 200px;
-    height: 200px;
-    background: #333;
-    border-radius: 15px;
+    width: 220px;
+    height: 220px;
+    background-color: #333;
+    border-radius: 15px; /* Rounded corners like Spotify */
     margin: 0 auto 25px;
+    /* Default Image jab tak search na ho */
     background-image: url('https://p1.hiclipart.com/sticker-png/598/415/sticker-png-spotify-music-logo-podcast-playlist-art-digital-audio-thumbnail.png');
     background-size: cover;
     background-position: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    transition: background-image 0.5s ease-in-out; /* Photo change hone par smooth effect */
 }
 
+/* Song Title */
 h2 {
-    font-size: 22px;
+    font-size: 20px;
     margin: 10px 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis; /* Bada naam hone par ... dikhayega */
 }
 
+/* Artist Name / Info */
 p {
     color: #b3b3b3;
     font-size: 14px;
     margin-bottom: 30px;
 }
 
-/* Play Button */
+/* Control Buttons */
+.controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 #play-btn {
     background: #1DB954;
     border: none;
@@ -96,9 +112,14 @@ p {
     cursor: pointer;
     letter-spacing: 1px;
     transition: 0.2s;
+    text-transform: uppercase;
 }
 
 #play-btn:hover {
     background: #1ed760;
     transform: scale(1.05);
+}
+
+#play-btn:active {
+    transform: scale(0.95);
 }
