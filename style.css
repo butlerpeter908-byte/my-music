@@ -1,42 +1,53 @@
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { background: #121212; color: #fff; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
-.hidden { display: none !important; }
+:root {
+    --bg-color: #0e0e0e;
+    --surface: #1a1a1a;
+    --primary: #9cd67d; /* OuterTune Greenish Tone */
+    --text-main: #ffffff;
+    --text-dim: #b0b0b0;
+}
 
-.top-nav { display: flex; justify-content: space-between; padding: 15px; background: #000; align-items: center; }
-.nav-left button { background: none; border: none; color: #b3b3b3; margin-right: 15px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-.nav-left button.active { color: #fff; border-bottom: 2px solid #1DB954; }
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body { background: var(--bg-color); color: var(--text-main); font-family: 'Inter', sans-serif; overflow: hidden; }
 
-.content-area { padding: 15px; height: calc(100vh - 160px); overflow-y: auto; padding-bottom: 100px; -webkit-overflow-scrolling: touch; }
-.playlist-row { display: flex; overflow-x: auto; gap: 15px; margin-bottom: 20px; scrollbar-width: none; }
-.playlist-card { min-width: 145px; background: #181818; padding: 12px; border-radius: 8px; cursor: pointer; }
-.playlist-card img { width: 100%; aspect-ratio: 1/1; border-radius: 6px; object-fit: cover; background: #333; }
-.playlist-card h4 { font-size: 13px; margin-top: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.app-container { height: 100vh; display: flex; flex-direction: column; }
+.main-header { padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+.scroll-area { flex: 1; overflow-y: auto; padding-bottom: 160px; }
 
-.playlist-header { text-align: center; padding: 30px 15px; background: linear-gradient(180deg, #1db95433 0%, #121212 100%); }
-.playlist-header img { width: 180px; height: 180px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
-.play-all-btn { background: #1DB954; border: none; padding: 12px 35px; border-radius: 30px; color: #fff; font-weight: bold; margin-top: 15px; }
+/* Grid Layout */
+.outer-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 15px; }
+.playlist-card { background: var(--surface); padding: 12px; border-radius: 16px; cursor: pointer; }
+.playlist-card img { width: 100%; aspect-ratio: 1/1; border-radius: 12px; object-fit: cover; }
+.playlist-card h4 { margin-top: 10px; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-.song-item { display: flex; align-items: center; padding: 12px; border-radius: 8px; margin-bottom: 4px; }
-.song-item img { width: 48px; height: 48px; border-radius: 4px; margin-right: 15px; }
+/* Floating Bottom Player */
+.outer-player-bar {
+    position: fixed; bottom: 85px; left: 10px; right: 10px;
+    background: #252525; border-radius: 16px; height: 65px;
+    display: flex; align-items: center; padding: 0 10px; z-index: 100;
+}
+.player-content { display: flex; width: 100%; align-items: center; gap: 12px; }
+.player-content img { width: 45px; height: 45px; border-radius: 8px; }
+.song-meta { flex: 1; overflow: hidden; }
+.song-meta h4 { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.song-meta p { font-size: 12px; color: var(--text-dim); }
+.mini-actions button { background: none; border: none; color: white; font-size: 20px; margin-left: 10px; }
 
-.player-bar { position: fixed; bottom: 0; width: 100%; height: 80px; background: #0b0b0b; display: flex; align-items: center; padding: 0 15px; z-index: 1000; border-top: 1px solid #222; }
-.song-info { display: flex; align-items: center; flex: 1; gap: 12px; overflow: hidden; }
-.mini-art { width: 45px; height: 45px; border-radius: 4px; background-size: cover; background-position: center; background-color: #222; }
-.mini-controls-fixed { display: flex; align-items: center; gap: 15px; }
-.m-btn { background: none; border: none; color: #fff; font-size: 22px; cursor: pointer; }
-.m-play { background: #fff; border: none; width: 42px; height: 42px; border-radius: 50%; color: #000; display: flex; align-items: center; justify-content: center; }
+/* Full Player Overlay */
+.full-player {
+    position: fixed; top: 100%; left: 0; width: 100%; height: 100%;
+    background: var(--bg-color); z-index: 1000; transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    display: flex; flex-direction: column; padding: 30px;
+}
+.full-player.active { top: 0; }
+.player-art img { width: 100%; aspect-ratio: 1/1; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
 
-.full-player-overlay { position: fixed; top: 100%; left: 0; width: 100%; height: 100%; background: #121212; z-index: 2000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding: 30px; text-align: center; }
-.full-player-overlay.active { top: 0; }
-.art-box img { width: 100%; aspect-ratio: 1/1; border-radius: 15px; margin: 30px 0; }
-.progress-container { display: flex; align-items: center; gap: 12px; margin: 25px 0; }
-.progress-bar { flex: 1; height: 4px; background: #333; border-radius: 10px; cursor: pointer; position: relative; }
-#progress-fill { width: 0%; height: 100%; background: #1DB954; border-radius: 10px; }
+/* Bottom Nav */
+.bottom-nav {
+    position: fixed; bottom: 0; width: 100%; height: 75px;
+    background: #000; display: flex; justify-content: space-around; align-items: center;
+}
+.nav-item { color: var(--text-dim); text-align: center; font-size: 12px; }
+.nav-item i { display: block; font-size: 20px; margin-bottom: 4px; }
+.nav-item.active { color: var(--primary); }
 
-.search-box { background: #fff; border-radius: 25px; padding: 10px 20px; margin-bottom: 20px; display: flex; }
-.search-box input { width: 100%; border: none; outline: none; font-size: 16px; color: #000; }
-.grid-view { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-
-.modal { position: fixed; bottom: -100%; left: 0; width: 100%; background: #282828; padding: 25px; border-radius: 20px 20px 0 0; z-index: 3000; transition: 0.3s; }
-.modal.show { bottom: 0; }
-.option { padding: 15px; border-bottom: 1px solid #333; font-size: 18px; }
+.hidden { display: none; }
