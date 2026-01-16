@@ -1,37 +1,127 @@
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { background: #000; color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; transition: 0.3s; }
-.hidden { display: none !important; }
-body.light-theme { background: #f9f9f9; color: #121212; }
+const API_KEY = 'AIzaSyBkricU1Xd041GGKd5BUXEXxfYU6fUzVzY';
+let player, currentPlaylist = [], currentIndex = -1;
+let favorites = JSON.parse(localStorage.getItem('favSongs')) || [];
+let downloads = JSON.parse(localStorage.getItem('dlSongs')) || [];
 
-/* Navigation */
-.top-nav { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #000; border-bottom: 1px solid #222; position: sticky; top: 0; z-index: 100; }
-.nav-left button { background: none; border: none; color: #b3b3b3; font-weight: bold; font-size: 14px; margin-right: 12px; cursor: pointer; }
-.nav-left button.active { color: #1DB954; border-bottom: 2px solid #1DB954; }
-.nav-right i { font-size: 20px; color: #b3b3b3; cursor: pointer; margin-right: 15px; }
+// --- Tab System ---
+function switchTab(btn, sid) {
+    document.querySelectorAll('.nav-left button').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.content-area').forEach(s => s.classList.add('hidden'));
+    btn.classList.add('active'); document.getElementById(sid).classList.remove('hidden');
+    if(sid === 'library-section') updateLibraryUI();
+}
+document.getElementById('home-tab').onclick = (e) => switchTab(e.target, 'home-section');
+document.getElementById('search-tab').onclick = (e) => switchTab(e.target, 'search-section');
+document.getElementById('library-tab').onclick = (e) => switchTab(e.target, 'library-section');
 
-/* Content Area */
-.content-area { padding: 20px; height: calc(100vh - 150px); overflow-y: auto; padding-bottom: 100px; }
-.playlist-row { display: flex; overflow-x: auto; gap: 15px; padding: 10px 0; scrollbar-width: none; }
-.playlist-card { min-width: 140px; background: #181818; padding: 12px; border-radius: 8px; cursor: pointer; }
-.playlist-card img { width: 100%; border-radius: 6px; margin-bottom: 8px; }
+// --- YouTube API ---
+var tag = document.createElement('script'); tag.src = "https://www.youtube.com/iframe_api";
+document.getElementsByTagName('script')[0].parentNode.insertBefore(tag, document.getElementsByTagName('script')[0]);
 
-/* Library Folder UI */
-.folder-container { display: flex; flex-direction: column; gap: 12px; }
-.folder-card { display: flex; align-items: center; background: #181818; padding: 12px; border-radius: 8px; cursor: pointer; }
-.folder-icon { width: 50px; height: 50px; background: #282828; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 22px; color: #1DB954; margin-right: 15px; }
+function onYouTubeIframeAPIReady() {
+    player = new YT.Player('youtube-player', { height: '0', width: '0', events: { 'onStateChange': onPlayerStateChange }});
+}
 
-/* Player Overlay Fixes */
-.full-player-overlay { position: fixed; top: 100%; left: 0; width: 100%; height: 100%; background: linear-gradient(#444, #121212); z-index: 2000; transition: 0.4s ease-out; padding: 25px; }
-.full-player-overlay.active { top: 0; }
-.full-player-header { display: flex; justify-content: space-between; width: 100%; align-items: center; }
-.options-trigger { font-size: 28px; color: white; padding: 5px; cursor: pointer; }
+// --- Fetch & Play (SHORTS BLOCKED) ---
+async function loadSongs(q, id = null) {
+    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${q}&type=video&videoDuration=medium&key=${API_KEY}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const filtered = data.items.filter(v => !v.snippet.title.toLowerCase().includes('shorts'));
+    if(id) {
+        const row = document.getElementById(id);
+        filtered.forEach((item, i) => {
+            const card = document.createElement('div'); card.className = 'playlist-card';
+            card.innerHTML = `<img src="${item.snippet.thumbnails.medium.url}"><h4>${item.snippet.title}</h4>`;
+            card.onclick = () => { currentPlaylist = filtered; playSong(i); };
+            row.appendChild(card);
+        });
+    } else { return filtered; }
+}
 
-/* Central Popup */
-.options-popup { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8); width: 85%; max-width: 320px; background: #282828; border-radius: 15px; opacity: 0; visibility: hidden; transition: 0.3s; z-index: 4000; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
-.options-popup.show { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
-.menu-item { padding: 15px; border-bottom: 1px solid #333; display: flex; align-items: center; gap: 15px; cursor: pointer; }
+function playSong(index) {
+    if(index < 0 || index >= currentPlaylist.length) return;
+    currentIndex = index;
+    const item = currentPlaylist[index];
+    player.loadVideoById(item.id.videoId);
+    document.getElementById('title').innerText = item.snippet.title;
+    document.getElementById('full-title').innerText = item.snippet.title;
+    document.getElementById('artist').innerText = item.snippet.channelTitle;
+    document.getElementById('full-artist').innerText = item.snippet.channelTitle;
+    document.getElementById('disk').style.backgroundImage = `url('${item.snippet.thumbnails.high.url}')`;
+    document.getElementById('large-disk').src = item.snippet.thumbnails.high.url;
+}
 
-/* Player Bar */
-.player-bar { position: fixed; bottom: 0; width: 100%; height: 85px; background: #000; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; border-top: 1px solid #222; }
-.main-play-btn { background: white; border: none; width: 42px; height: 42px; border-radius: 50%; font-size: 18px; }
-             
+// --- Search & Library Logic ---
+document.getElementById('search-btn').onclick = async () => {
+    const q = document.getElementById('search-input').value;
+    currentPlaylist = await loadSongs(q);
+    const list = document.getElementById('results-list'); list.innerHTML = "";
+    currentPlaylist.forEach((item, i) => {
+        const div = document.createElement('div'); div.className = 'folder-card'; div.style.marginBottom="8px";
+        div.innerHTML = `<img src="${item.snippet.thumbnails.default.url}" style="width:50px; margin-right:15px;"><h4>${item.snippet.title}</h4>`;
+        div.onclick = () => playSong(i);
+        list.appendChild(div);
+    });
+};
+
+function updateLibraryUI() {
+    document.getElementById('fav-count').innerText = `${favorites.length} songs`;
+    document.getElementById('dl-count').innerText = `${downloads.length} songs`;
+}
+
+document.getElementById('fav-folder-btn').onclick = () => renderLib(favorites, "Favorites");
+document.getElementById('dl-folder-btn').onclick = () => renderLib(downloads, "Downloads");
+
+function renderLib(songs, title) {
+    const list = document.getElementById('library-list');
+    list.innerHTML = `<h3 style="margin: 15px 0; color:#1DB954;">${title}</h3>`;
+    songs.forEach((item, i) => {
+        const div = document.createElement('div'); div.className = 'folder-card'; div.style.marginBottom="8px";
+        div.innerHTML = `<img src="${item.snippet.thumbnails.default.url}" style="width:45px; margin-right:12px;"><h4>${item.snippet.title}</h4>`;
+        div.onclick = () => { currentPlaylist = songs; playSong(i); };
+        list.appendChild(div);
+    });
+}
+
+// --- Fav & Download Triggers ---
+document.getElementById('fav-trigger').onclick = () => {
+    const s = currentPlaylist[currentIndex];
+    if(!favorites.find(x => x.id.videoId === s.id.videoId)) {
+        favorites.push(s); localStorage.setItem('favSongs', JSON.stringify(favorites));
+        alert("Added to Favorites!");
+    }
+    document.getElementById('options-menu').classList.remove('show');
+};
+
+document.getElementById('download-trigger').onclick = () => {
+    const s = currentPlaylist[currentIndex];
+    if(!downloads.find(x => x.id.videoId === s.id.videoId)) {
+        downloads.push(s); localStorage.setItem('dlSongs', JSON.stringify(downloads));
+    }
+    window.open(`https://www.youtube.com/watch?v=${s.id.videoId}`, '_blank');
+};
+
+// --- Player Controls ---
+document.getElementById('mini-player-trigger').onclick = () => document.getElementById('full-player').classList.add('active');
+document.getElementById('close-full-player').onclick = () => document.getElementById('full-player').classList.remove('active');
+document.getElementById('menu-dots-btn').onclick = () => document.getElementById('options-menu').classList.add('show');
+document.getElementById('close-menu').onclick = () => document.getElementById('options-menu').classList.remove('show');
+
+const toggle = () => player.getPlayerState() === 1 ? player.pauseVideo() : player.playVideo();
+document.getElementById('play-btn').onclick = toggle;
+document.getElementById('full-play-btn').onclick = toggle;
+document.getElementById('next-btn').onclick = () => playSong(currentIndex + 1);
+document.getElementById('prev-btn').onclick = () => playSong(currentIndex - 1);
+
+function onPlayerStateChange(e) {
+    const ic = e.data === 1 ? '<i class="fa-solid fa-pause"></i>' : '<i class="fa-solid fa-play"></i>';
+    document.getElementById('play-btn').innerHTML = ic;
+    document.getElementById('full-play-btn').innerHTML = ic;
+    if(e.data === 0) playSong(currentIndex + 1);
+}
+
+loadSongs("New Hindi Songs 2026", "hits-row");
+loadSongs("Relaxing Music", "monsoon-row");
+loadSongs("Global Top Hits", "trending-row");
+updateLibraryUI();
