@@ -27,7 +27,7 @@ searchBtn.addEventListener('click', async () => {
     if(!query) return alert("Gaane ka naam likho!");
 
     const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${query}&type=video&key=${API_KEY}`;
-    
+
     try {
         const res = await fetch(url);
         const data = await res.json();
