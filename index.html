@@ -37,13 +37,13 @@
             <div id="library-list" class="grid-view"></div>
         </section>
 
-        <footer class="player-bar" onclick="openFullPlayer()">
+        <footer class="player-bar">
             <div id="youtube-player"></div>
-            <div class="song-info">
+            <div class="song-info" onclick="openFullPlayer()">
                 <div class="mini-art" id="disk"></div>
                 <div class="text"><h4 id="title">Select a song</h4><p id="artist">Artist</p></div>
             </div>
-            <button id="play-btn" class="play-icon"><i class="fa-solid fa-play"></i></button>
+            <button id="play-btn" class="play-icon" onclick="togglePlay(event)"><i class="fa-solid fa-play"></i></button>
         </footer>
     </div>
 
@@ -58,14 +58,16 @@
 
         <div class="progress-container">
             <span id="current-time">0:00</span>
-            <div class="progress-bar"><div id="progress-fill"></div></div>
+            <div class="progress-bar" id="seek-bar-container" onclick="seekSong(event)">
+                <div id="progress-fill"></div>
+            </div>
             <span id="total-duration">0:00</span>
         </div>
 
         <div class="controls">
-            <i class="fa-solid fa-backward-step" id="prev-btn-trigger"></i>
-            <button id="full-play-btn" class="big-play"><i class="fa-solid fa-play"></i></button>
-            <i class="fa-solid fa-forward-step" id="next-btn-trigger"></i>
+            <i class="fa-solid fa-backward-step" onclick="prevSong()"></i>
+            <button id="full-play-btn" class="big-play" onclick="togglePlay(event)"><i class="fa-solid fa-play"></i></button>
+            <i class="fa-solid fa-forward-step" onclick="nextSong()"></i>
         </div>
 
         <div class="up-next-box">
@@ -76,7 +78,7 @@
 
     <div id="options-menu" class="modal">
         <div class="option" id="fav-btn-trigger"><i class="fa-solid fa-heart"></i> Add to Favorite</div>
-        <div class="option" id="dl-btn-trigger"><i class="fa-solid fa-download"></i> Download MP3</div>
+        <div class="option" id="dl-btn-trigger"><i class="fa-solid fa-download"></i> Download & Store</div>
         <button class="close-btn" onclick="hideMenu()">Close</button>
     </div>
 
