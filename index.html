@@ -3,20 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spotify Online</title>
+    <title>Spotify Online - Multi Search</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
     <div class="search-container">
-        <input type="text" id="search-input" placeholder="Search any song...">
+        <input type="text" id="search-input" placeholder="Search any song (e.g. Arijit Singh)...">
         <button id="search-btn">🔍</button>
     </div>
 
+    <div id="results-list" class="results-container"></div>
+
     <div class="player-container">
         <div id="youtube-player" style="display: none;"></div>
+        
         <div class="disk" id="disk"></div>
-        <h2 id="title">Search a Song</h2>
+        
+        <h2 id="title">Select a Song</h2>
         <p id="artist">YouTube Music Stream</p>
+        
         <div class="controls">
             <button id="play-btn">PLAY</button>
         </div>
