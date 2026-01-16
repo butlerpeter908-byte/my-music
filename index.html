@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spotify Music Pro</title>
+    <title>Spotify Pro</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -15,44 +15,33 @@
                 <button id="search-tab">Search</button>
                 <button id="library-tab">Library</button>
             </div>
-            <div class="nav-right">
-                <i class="fa-solid fa-gear"></i>
-                <div class="profile-icon"><i class="fa-solid fa-user"></i></div>
-            </div>
+            <i class="fa-solid fa-gear"></i>
         </nav>
 
         <section id="home-section" class="content-area">
             <div class="category"><h2>Best of 2025</h2><div class="playlist-row" id="best-2025"></div></div>
-            <div class="category"><h2>Bollywood Trending</h2><div class="playlist-row" id="bollywood-trending"></div></div>
-            <div class="category"><h2>Bollywood Hitlist</h2><div class="playlist-row" id="bollywood-hits"></div></div>
-            <div class="category"><h2>Bollywood 90s Special</h2><div class="playlist-row" id="bollywood-90s"></div></div>
-            <div class="category"><h2>Bollywood Old is Gold</h2><div class="playlist-row" id="bollywood-old"></div></div>
+            <div class="category"><h2>Trending</h2><div class="playlist-row" id="bollywood-trending"></div></div>
+            <div class="category"><h2>90s Special</h2><div class="playlist-row" id="bollywood-90s"></div></div>
+            <div class="category"><h2>Old Gold</h2><div class="playlist-row" id="bollywood-old"></div></div>
         </section>
 
         <section id="search-section" class="content-area hidden">
             <div class="search-box">
-                <input type="text" id="search-input" placeholder="Search Music...">
+                <input type="text" id="search-input" placeholder="Search Songs...">
                 <button id="search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
             </div>
-            <div id="results-list" class="grid-view"></div>
+            <div id="results-list" class="results-grid"></div>
         </section>
 
         <section id="library-section" class="content-area hidden">
-            <div class="lib-folders">
-                <div class="folder" id="fav-btn"><i class="fa-solid fa-heart"></i> Favorites</div>
-                <div class="folder" id="dl-btn"><i class="fa-solid fa-circle-down"></i> Downloads</div>
-            </div>
-            <div id="library-list" class="grid-view"></div>
+            <div id="library-list" class="results-grid"></div>
         </section>
 
         <footer class="player-bar">
-            <div id="youtube-player" style="display: none;"></div>
+            <div id="youtube-player" style="display:none"></div>
             <div class="song-info" id="mini-player-trigger">
                 <div class="mini-art" id="disk"></div>
-                <div class="text">
-                    <h4 id="title">Select a song</h4>
-                    <p id="artist">Artist</p>
-                </div>
+                <div class="text"><h4 id="title">Select a song</h4><p id="artist">Artist</p></div>
             </div>
             <button id="play-btn" class="play-icon"><i class="fa-solid fa-play"></i></button>
         </footer>
@@ -61,19 +50,11 @@
     <div id="full-player" class="full-player-overlay">
         <div class="header">
             <i class="fa-solid fa-chevron-down" id="close-full"></i>
-            <div class="options-trigger-area" id="menu-dots-btn">
-                <i class="fa-solid fa-ellipsis-vertical"></i>
-            </div>
+            <div id="menu-dots-btn" style="padding:10px;"><i class="fa-solid fa-ellipsis-vertical" style="font-size:35px;"></i></div>
         </div>
         <div class="art-box"><img id="large-disk" src=""></div>
-        <div class="song-meta">
-            <h2 id="full-title">Song Title</h2>
-            <p id="full-artist">Artist</p>
-        </div>
-        <div class="progress-area">
-            <div class="bar-bg"><div id="progress-fill" class="bar-fill"></div></div>
-            <div class="times"><span id="current">0:00</span><span id="duration">0:00</span></div>
-        </div>
+        <h2 id="full-title">Song Title</h2>
+        <p id="full-artist">Artist</p>
         <div class="controls">
             <i class="fa-solid fa-backward-step" id="prev-btn"></i>
             <button id="full-play-btn"><i class="fa-solid fa-play"></i></button>
