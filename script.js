@@ -1,35 +1,58 @@
-// Apni API key yahan paste karein
-const API_KEY = 'AIzaSyBkr...'; 
+const API_KEY = 'AIzaSyBkr...'; // <-- Apni Key Yahan Dalein
+
+let player;
+
+// YouTube API load karna
+var tag = document.createElement('script');
+tag.src = "https://www.youtube.com/iframe_api";
+var firstScriptTag = document.getElementsByTagName('script')[0];
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+function onYouTubeIframeAPIReady() {
+    player = new YT.Player('youtube-player', {
+        height: '0',
+        width: '0',
+        events: {
+            'onStateChange': onPlayerStateChange
+        }
+    });
+}
 
 const searchBtn = document.getElementById('search-btn');
-const searchInput = document.getElementById('search-input');
-const titleDisplay = document.getElementById('title');
+const playBtn = document.getElementById('play-btn');
 
+// Search Logic
 searchBtn.addEventListener('click', async () => {
-    const query = searchInput.value;
-    if (!query) return alert("Gaane ka naam likhein!");
+    const query = document.getElementById('search-input').value;
+    if(!query) return alert("Kuch likho!");
 
-    titleDisplay.innerText = "Searching...";
-
+    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${query}&type=video&key=${API_KEY}`;
+    
     try {
-        // YouTube API se search karna
-        const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${query}&type=video&key=${API_KEY}`);
+        const res = await fetch(url);
         const data = await res.json();
-
-        if (data.items.length > 0) {
-            const videoId = data.items[0].id.videoId;
-            const songTitle = data.items[0].snippet.title;
-
-            titleDisplay.innerText = songTitle;
-            
-            // Ab hume is VideoId ko play karna hai
-            // Play karne ke liye hume YouTube Player API chahiye hogi
-            alert("Gaana mil gaya: " + songTitle);
-        } else {
-            alert("Gaana nahi mila!");
-        }
+        const videoId = data.items[0].id.videoId;
+        const title = data.items[0].snippet.title;
+        
+        document.getElementById('title').innerText = title;
+        player.loadVideoById(videoId);
+        playBtn.innerText = 'PAUSE';
     } catch (err) {
-        console.error("API Error:", err);
-        alert("Kuch galti hui, check karein key restrict hui ya nahi.");
+        alert("API Key check karein ya quota khatam ho gaya!");
     }
 });
+
+// Play/Pause Button toggle
+playBtn.addEventListener('click', () => {
+    if (player.getPlayerState() === 1) {
+        player.pauseVideo();
+        playBtn.innerText = 'PLAY';
+    } else {
+        player.playVideo();
+        playBtn.innerText = 'PAUSE';
+    }
+});
+
+function onPlayerStateChange(event) {
+    if (event.data === 0) playBtn.innerText = 'PLAY';
+}
