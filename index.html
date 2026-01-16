@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spotify Clone</title>
+    <title>Spotify Clone - My Music</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
@@ -38,23 +38,24 @@
 
             <div class="player-controls">
                 <div class="control-btns">
-                    <i class="fa-solid fa-shuffle"></i>
-                    <i class="fa-solid fa-backward-step"></i>
-                    <button id="play-btn" class="main-play-btn"><i class="fa-solid fa-play"></i></button>
-                    <i class="fa-solid fa-forward-step"></i>
-                    <i class="fa-solid fa-repeat"></i>
+                    <i class="fa-solid fa-shuffle shuffle-hide"></i>
+                    <i class="fa-solid fa-backward-step" id="prev-btn"></i>
+                    <button id="play-btn" class="main-play-btn">
+                        <i class="fa-solid fa-play"></i>
+                    </button>
+                    <i class="fa-solid fa-forward-step" id="next-btn"></i>
+                    <i class="fa-solid fa-repeat repeat-hide"></i>
                 </div>
                 <div class="progress-container">
                     <span>0:00</span>
                     <div class="progress-bar-bg">
-                        <div class="progress-bar-fill"></div>
+                        <div id="progress-fill" class="progress-bar-fill"></div>
                     </div>
-                    <span>0:00</span>
+                    <span>-:-</span>
                 </div>
             </div>
 
             <div class="volume-controls">
-                <i class="fa-solid fa-microphone"></i>
                 <i class="fa-solid fa-list"></i>
                 <i class="fa-solid fa-volume-high"></i>
                 <div class="volume-slider"></div>
