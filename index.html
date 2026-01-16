@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spotify Pro</title>
+    <title>Spotify Music Pro</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -15,7 +15,7 @@
                 <button onclick="switchTab('search-section', this)">Search</button>
                 <button onclick="switchTab('library-section', this)">Library</button>
             </div>
-            <i class="fa-solid fa-gear"></i>
+            <i class="fa-solid fa-gear" id="settings-btn" onclick="openSettings()"></i>
         </nav>
 
         <section id="home-section" class="content-area">
@@ -26,14 +26,15 @@
 
         <section id="search-section" class="content-area hidden">
             <div class="search-box">
-                <input type="text" id="search-input" placeholder="Search music...">
+                <input type="text" id="search-input" placeholder="Search songs..." oninput="instantSearch()">
                 <button id="search-btn-trigger"><i class="fa-solid fa-magnifying-glass"></i></button>
             </div>
             <div id="results-list" class="grid-view"></div>
         </section>
 
         <section id="library-section" class="content-area hidden">
-            <div class="grid-view" id="library-list"></div>
+            <div class="lib-header"><h2>Your Collection</h2></div>
+            <div id="library-list" class="grid-view"></div>
         </section>
 
         <footer class="player-bar" onclick="openFullPlayer()">
@@ -54,14 +55,27 @@
         <div class="art-box"><img id="large-disk" src=""></div>
         <h2 id="full-title">Song Title</h2>
         <p id="full-artist">Artist</p>
+
+        <div class="progress-container">
+            <span id="current-time">0:00</span>
+            <div class="progress-bar"><div id="progress-fill"></div></div>
+            <span id="total-duration">0:00</span>
+        </div>
+
         <div class="controls">
             <i class="fa-solid fa-backward-step" id="prev-btn-trigger"></i>
             <button id="full-play-btn" class="big-play"><i class="fa-solid fa-play"></i></button>
             <i class="fa-solid fa-forward-step" id="next-btn-trigger"></i>
         </div>
+
+        <div class="up-next-box">
+            <p>UP NEXT</p>
+            <h4 id="next-song-name">Nothing in queue</h4>
+        </div>
     </div>
 
     <div id="options-menu" class="modal">
+        <div class="option" id="fav-btn-trigger"><i class="fa-solid fa-heart"></i> Add to Favorite</div>
         <div class="option" id="dl-btn-trigger"><i class="fa-solid fa-download"></i> Download MP3</div>
         <button class="close-btn" onclick="hideMenu()">Close</button>
     </div>
