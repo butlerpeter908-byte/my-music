@@ -3,88 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OuterTune x Spotify</title>
+    <title>Spotify Music Pro</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="app-container">
-        <header>
-            <h1 id="tab-title">Home</h1>
-            <div class="user-profile"><i class="fa-solid fa-circle-user"></i></div>
-        </header>
-
-        <main class="scroll-area">
-            <section id="home-section" class="tab-content">
-                <h3 class="section-label">Spotify Picks</h3>
-                <div class="grid" id="home-grid"></div>
-                
-                <div id="playlist-view" class="hidden">
-                    <div class="back-nav" onclick="closePlaylist()">
-                        <i class="fa-solid fa-chevron-left"></i> <span>Back</span>
-                    </div>
-                    <div id="song-list"></div>
-                </div>
-            </section>
-
-            <section id="search-section" class="tab-content hidden">
-                <div class="search-box">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="search-input" placeholder="Search Spotify music..." oninput="searchMusic()">
-                </div>
-                <div class="grid" id="search-results"></div>
-            </section>
-
-            <section id="library-section" class="tab-content hidden">
-                <h3 class="section-label">Your Library</h3>
-                <div id="library-list">
-                    <p class="empty-msg">No saved songs yet.</p>
-                </div>
-            </section>
-        </main>
-
-        <div class="mini-player" onclick="openFullPlayer()">
-            <div id="yt-player-container" style="display:none"></div>
-            <img id="m-img" src="https://via.placeholder.com/50">
-            <div class="mini-meta">
-                <h4 id="m-title">Ready to play</h4>
-                <p id="m-artist">Spotify Mix</p>
+    <div class="main-container">
+        <nav class="top-nav">
+            <div class="nav-left">
+                <button onclick="switchTab('home-section', this)" class="active">Home</button>
+                <button onclick="switchTab('search-section', this)">Search</button>
+                <button onclick="switchTab('library-section', this)">Library</button>
             </div>
-            <div class="mini-controls">
-                <i class="fa-solid fa-play" id="m-play-icon" onclick="togglePlay(event)"></i>
-                <i class="fa-solid fa-forward-step" onclick="nextSong(event)"></i>
-            </div>
-        </div>
-
-        <nav class="bottom-nav">
-            <div class="nav-item active" onclick="switchTab('home-section', this)"><i class="fa-solid fa-house"></i>Home</div>
-            <div class="nav-item" onclick="switchTab('search-section', this)"><i class="fa-solid fa-magnifying-glass"></i>Search</div>
-            <div class="nav-item" onclick="switchTab('library-section', this)"><i class="fa-solid fa-bookmark"></i>Library</div>
+            <i class="fa-solid fa-gear" onclick="alert('Settings: High Quality Audio Unlocked')"></i>
         </nav>
 
-        <div id="full-player" class="full-player">
-            <i class="fa-solid fa-chevron-down close-player" onclick="closeFullPlayer()"></i>
-            <div class="full-art-container">
-                <img id="f-img" class="full-art" src="">
-            </div>
-            <h2 id="f-title">Song Title</h2>
-            <p id="f-artist">Artist Name</p>
-            <div class="progress-container">
-                <div class="progress-bg" id="seek-bar" onclick="manualSeek(event)">
-                    <div id="progress-fill"></div>
+        <section id="home-section" class="content-area">
+            <div id="playlist-view" class="hidden">
+                <div class="playlist-header">
+                    <i class="fa-solid fa-arrow-left" onclick="backToHome()"></i>
+                    <img id="playlist-cover" src="">
+                    <h2 id="playlist-name">Playlist</h2>
+                    <button class="play-all-btn" onclick="playAll()"><i class="fa-solid fa-play"></i> PLAY ALL</button>
                 </div>
-                <div class="time-stamps">
-                    <span id="curr-time">0:00</span>
-                    <span id="total-time">0:00</span>
-                </div>
+                <div id="playlist-songs-list"></div>
             </div>
-            <div class="full-controls">
-                <i class="fa-solid fa-backward-step" onclick="prevSong()"></i>
-                <div class="play-btn-big" onclick="togglePlay()"><i class="fa-solid fa-play" id="f-play-icon"></i></div>
-                <i class="fa-solid fa-forward-step" onclick="nextSong()"></i>
+
+            <div id="home-default">
+                <div class="category"><h2>Featured Playlists</h2><div class="playlist-row" id="main-playlists"></div></div>
+                <div class="category"><h2>Your Recently Saved</h2><div class="playlist-row" id="recent-row"></div></div>
             </div>
+        </section>
+
+        <section id="search-section" class="content-area hidden">
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="Search songs, artists..." onkeyup="instantSearch()">
+            </div>
+            <div id="results-list" class="grid-view"></div>
+        </section>
+
+        <section id="library-section" class="content-area hidden">
+            <div class="lib-info"><h2>Offline Library</h2></div>
+            <div id="library-list" class="grid-view"></div>
+        </section>
+
+        <footer class="player-bar">
+            <div id="youtube-player"></div>
+            <div class="song-info" onclick="openFullPlayer()">
+                <div class="mini-art" id="disk"></div>
+                <div class="text"><h4 id="title">Select a song</h4><p id="artist">Artist</p></div>
+            </div>
+            <div class="mini-controls">
+                <button class="mini-btn" onclick="prevSong()"><i class="fa-solid fa-backward-step"></i></button>
+                <button id="play-btn" class="play-icon" onclick="togglePlay(event)"><i class="fa-solid fa-play"></i></button>
+                <button class="mini-btn" onclick="nextSong()"><i class="fa-solid fa-forward-step"></i></button>
+            </div>
+        </footer>
+    </div>
+
+    <div id="full-player" class="full-player-overlay">
+        <div class="header">
+            <i class="fa-solid fa-chevron-down" onclick="closeFullPlayer()"></i>
+            <i class="fa-solid fa-ellipsis-vertical" onclick="showMenu()"></i>
+        </div>
+        <div class="art-box"><img id="large-disk" src=""></div>
+        <h2 id="full-title">Song Title</h2>
+        <p id="full-artist">Artist</p>
+        <div class="progress-container">
+            <span id="current-time">0:00</span>
+            <div class="progress-bar" id="seek-bar" onclick="seek(event)">
+                <div id="progress-fill"></div>
+            </div>
+            <span id="total-duration">0:00</span>
+        </div>
+        <div class="controls">
+            <i class="fa-solid fa-backward-step" onclick="prevSong()"></i>
+            <button id="full-play-btn" class="big-play" onclick="togglePlay(event)"><i class="fa-solid fa-play"></i></button>
+            <i class="fa-solid fa-forward-step" onclick="nextSong()"></i>
         </div>
     </div>
+
+    <div id="options-menu" class="modal">
+        <div class="option" onclick="startDownload()"><i class="fa-solid fa-download"></i> Save to Offline</div>
+        <button class="close-btn" onclick="hideMenu()">Close</button>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
