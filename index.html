@@ -15,7 +15,7 @@
                 <button onclick="switchTab('search-section', this)">Search</button>
                 <button onclick="switchTab('library-section', this)">Library</button>
             </div>
-            <i class="fa-solid fa-gear" onclick="alert('Fast Mode Enabled')"></i>
+            <i class="fa-solid fa-bolt" style="color: #1DB954;"></i>
         </nav>
 
         <section id="home-section" class="content-area">
@@ -30,14 +30,14 @@
             </div>
 
             <div id="home-default">
-                <div class="category"><h2>Your Playlists</h2><div class="playlist-row" id="main-playlists"></div></div>
-                <div class="category"><h2>Quick Picks</h2><div class="playlist-row" id="recent-row"></div></div>
+                <div class="category"><h2>Featured Playlists</h2><div class="playlist-row" id="main-playlists"></div></div>
+                <div class="category"><h2>Recommended</h2><div class="playlist-row" id="recent-row"></div></div>
             </div>
         </section>
 
         <section id="search-section" class="content-area hidden">
             <div class="search-box">
-                <input type="text" id="search-input" placeholder="Search music..." onkeyup="instantSearch()">
+                <input type="text" id="search-input" placeholder="Type to search..." oninput="instantSearch()">
             </div>
             <div id="results-list" class="grid-view"></div>
         </section>
@@ -50,7 +50,7 @@
             <div id="youtube-player"></div>
             <div class="song-info" onclick="openFullPlayer()">
                 <div class="mini-art" id="disk"></div>
-                <div class="text"><h4 id="title">Select a song</h4><p id="artist">Artist</p></div>
+                <div class="text"><h4 id="title">Not Playing</h4><p id="artist">Artist</p></div>
             </div>
             <div class="mini-controls-fixed">
                 <button class="m-btn" onclick="prevSong(event)"><i class="fa-solid fa-backward-step"></i></button>
@@ -78,7 +78,7 @@
     </div>
 
     <div id="options-menu" class="modal">
-        <div class="option" onclick="startDownload()">Save to Offline</div>
+        <div class="option" onclick="startDownload()">Add to Library</div>
         <button class="close-btn" onclick="hideMenu()">Close</button>
     </div>
 
