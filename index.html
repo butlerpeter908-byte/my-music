@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spotify Pro Clone</title>
+    <title>Spotify Music Pro</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -22,19 +22,25 @@
         </nav>
 
         <section id="home-section" class="content-area">
-            <div class="category"><h2>Bollywood Hitlist</h2><div class="playlist-row" id="hits-row"></div></div>
-            <div class="category"><h2>Trending Now</h2><div class="playlist-row" id="trending-row"></div></div>
+            <div class="category">
+                <h2>Recommended Music</h2>
+                <div class="playlist-grid" id="hits-row"></div>
+            </div>
+            <div class="category">
+                <h2>Trending Hits</h2>
+                <div class="playlist-grid" id="trending-row"></div>
+            </div>
         </section>
 
         <section id="search-section" class="content-area hidden">
             <div class="search-bar-container">
                 <div class="search-bar">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="search-input" placeholder="Search songs...">
+                    <input type="text" id="search-input" placeholder="Search for songs or artists...">
                 </div>
                 <button id="search-btn">Search</button>
             </div>
-            <div id="results-list" class="spotify-list"></div>
+            <div id="results-list" class="playlist-grid"></div>
         </section>
 
         <section id="library-section" class="content-area hidden">
@@ -49,7 +55,7 @@
                     <div class="folder-info"><h3>Downloads</h3><p id="dl-count">0 songs</p></div>
                 </div>
             </div>
-            <div id="library-list" class="spotify-list"></div>
+            <div id="library-list" class="playlist-grid"></div>
         </section>
 
         <footer class="player-bar">
@@ -58,7 +64,7 @@
                 <div class="mini-disk" id="disk"></div>
                 <div class="song-details">
                     <h4 id="title">Select a song</h4>
-                    <p id="artist">YouTube Music</p>
+                    <p id="artist">Artist</p>
                 </div>
             </div>
             <button id="play-btn" class="main-play-btn"><i class="fa-solid fa-play"></i></button>
@@ -70,7 +76,7 @@
             <button id="close-full-player"><i class="fa-solid fa-chevron-down"></i></button>
             <div class="options-trigger" id="menu-dots-btn"><i class="fa-solid fa-ellipsis-vertical"></i></div>
         </div>
-        <div class="large-art-container"><img id="large-disk" src="" alt=""></div>
+        <div class="large-art-container"><img id="large-disk" src="" alt="Cover"></div>
         <div class="full-song-info">
             <div class="song-text">
                 <h2 id="full-title">Song Title</h2>
@@ -86,13 +92,16 @@
             <button id="full-play-btn" class="big-play-btn"><i class="fa-solid fa-play"></i></button>
             <i class="fa-solid fa-forward-step" id="next-btn"></i>
         </div>
-
-        <div id="options-menu" class="options-popup">
-            <div class="menu-item" id="download-trigger"><i class="fa-solid fa-download"></i> Download</div>
-            <div class="menu-item" id="fav-trigger"><i class="fa-solid fa-heart"></i> Add to Favorite</div>
-            <button id="close-menu" class="close-pop-btn">Close</button>
-        </div>
     </div>
+
+    <div id="options-menu" class="options-popup">
+        <div class="menu-item" id="download-trigger"><i class="fa-solid fa-download"></i> Download to Device</div>
+        <div class="menu-item" id="fav-trigger"><i class="fa-solid fa-heart"></i> Save to Favorites</div>
+        <button id="close-menu" class="close-pop-btn">Close</button>
+    </div>
+    
+    <div id="download-toast" class="toast hidden">Downloading...</div>
+
     <script src="script.js"></script>
 </body>
 </html>
