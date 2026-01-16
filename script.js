@@ -1,23 +1,31 @@
 const API_KEY = 'AIzaSyBkricU1Xd041GGKd5BUXEXxfYU6fUzVzY';
 let player, currentPlaylist = [], currentIndex = -1, searchTimer;
 
+// Pre-load YouTube API
 var tag = document.createElement('script'); tag.src = "https://www.youtube.com/iframe_api";
 document.getElementsByTagName('script')[0].parentNode.insertBefore(tag, document.getElementsByTagName('script')[0]);
 
 function onYouTubeIframeAPIReady() {
     player = new YT.Player('youtube-player', { height: '0', width: '0', 
-        events: { 'onStateChange': onPlayerStateChange, 'onReady': () => setInterval(updateProgress, 1000) }
+        events: { 'onStateChange': onPlayerStateChange, 'onReady': () => {
+            console.log("Player Ready");
+            setInterval(updateProgress, 1000);
+        }}
     });
 }
 
 const playlistsData = [
     { id: 'p1', name: 'Bollywood 2026', q: 'New Bollywood Songs 2026', img: 'https://i.ytimg.com/vi/ApnaBanaLe/maxresdefault.jpg' },
-    { id: 'p2', name: 'Trending Now', q: 'Trending Hindi Songs', img: 'https://i.ytimg.com/vi/Kesariya/maxresdefault.jpg' },
-    { id: 'p3', name: '90s Gold', q: '90s Bollywood Hits', img: 'https://i.ytimg.com/vi/KumarSanu/maxresdefault.jpg' }
+    { id: 'p2', name: 'Trending Now', q: 'Popular Hindi Music 2025', img: 'https://i.ytimg.com/vi/Kesariya/maxresdefault.jpg' },
+    { id: 'p3', name: '90s Gold Hits', q: '90s Bollywood Romantic Songs', img: 'https://i.ytimg.com/vi/KumarSanu/maxresdefault.jpg' }
 ];
 
+// Optimized Home Load
 async function loadHome() {
     const row = document.getElementById('main-playlists');
+    row.innerHTML = "Loading..."; 
+    
+    // Immediate display of playlists from data
     row.innerHTML = "";
     playlistsData.forEach(p => {
         const d = document.createElement('div'); d.className = 'playlist-card';
@@ -27,48 +35,61 @@ async function loadHome() {
     });
 }
 
+// Fixed Instant Search
+function instantSearch() {
+    const q = document.getElementById('search-input').value;
+    if (q.length < 2) return;
+    
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(async () => {
+        try {
+            const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${q}&type=video&videoDuration=medium&videoCategoryId=10&key=${API_KEY}`);
+            const data = await res.json();
+            const list = document.getElementById('results-list');
+            list.innerHTML = "";
+            if(data.items) {
+                data.items.forEach((s, i) => {
+                    const d = document.createElement('div'); d.className = 'playlist-card';
+                    d.innerHTML = `<img src="${s.snippet.thumbnails.medium.url}"><h4>${s.snippet.title.substring(0,30)}...</h4>`;
+                    d.onclick = () => playSong(i, data.items);
+                    list.appendChild(d);
+                });
+            }
+        } catch(e) { console.error("Search Error"); }
+    }, 300); // 300ms is standard for instant feel
+}
+
 async function openPlaylist(p) {
     document.getElementById('home-default').classList.add('hidden');
-    document.getElementById('playlist-view').classList.remove('hidden');
+    const view = document.getElementById('playlist-view');
+    view.classList.remove('hidden');
     document.getElementById('playlist-cover').src = p.img;
     document.getElementById('playlist-name').innerText = p.name;
-    // Filter for 2-8 min songs (videoDuration: medium)
-    const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=50&q=${p.q}&type=video&videoDuration=medium&key=${API_KEY}`);
-    const data = await res.json();
+    
     const listDiv = document.getElementById('playlist-songs-list');
+    listDiv.innerHTML = "<p style='padding:20px'>Loading songs...</p>";
+
+    const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=30&q=${p.q}&type=video&videoDuration=medium&key=${API_KEY}`);
+    const data = await res.json();
+    
     listDiv.innerHTML = "";
     data.items.forEach((s, i) => {
         const item = document.createElement('div'); item.className = 'song-item';
-        item.innerHTML = `<img src="${s.snippet.thumbnails.default.url}"><div><h4>${s.snippet.title}</h4><p>${s.snippet.channelTitle}</p></div>`;
+        item.innerHTML = `<img src="${s.snippet.thumbnails.default.url}"><div><h4>${s.snippet.title.substring(0,50)}</h4><p>${s.snippet.channelTitle}</p></div>`;
         item.onclick = () => playSong(i, data.items);
         listDiv.appendChild(item);
     });
 }
 
-function instantSearch() {
-    clearTimeout(searchTimer);
-    const q = document.getElementById('search-input').value;
-    if (q.length < 2) return;
-    searchTimer = setTimeout(async () => {
-        const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&q=${q}&type=video&videoDuration=medium&key=${API_KEY}`);
-        const data = await res.json();
-        const list = document.getElementById('results-list');
-        list.innerHTML = "";
-        data.items.forEach((s, i) => {
-            const d = document.createElement('div'); d.className = 'playlist-card';
-            d.innerHTML = `<img src="${s.snippet.thumbnails.high.url}"><h4>${s.snippet.title}</h4>`;
-            d.onclick = () => playSong(i, data.items);
-            list.appendChild(d);
-        });
-    }, 400); // Super fast search
-}
-
 function playSong(idx, list) {
-    if(!list[idx]) return;
+    if(!list || !list[idx]) return;
     currentPlaylist = list; currentIndex = idx;
     const s = currentPlaylist[idx];
-    player.loadVideoById(s.id.videoId);
-    document.getElementById('title').innerText = s.snippet.title.substring(0,20);
+    
+    const vidId = s.id.videoId || s.id;
+    player.loadVideoById(vidId);
+    
+    document.getElementById('title').innerText = s.snippet.title.substring(0,25);
     document.getElementById('full-title').innerText = s.snippet.title;
     document.getElementById('artist').innerText = s.snippet.channelTitle;
     document.getElementById('full-artist').innerText = s.snippet.channelTitle;
@@ -76,7 +97,7 @@ function playSong(idx, list) {
     document.getElementById('large-disk').src = s.snippet.thumbnails.high.url;
 }
 
-function togglePlay(e) { if(e) e.stopPropagation(); player.getPlayerState() === 1 ? player.pauseVideo() : player.playVideo(); }
+function togglePlay(e) { if(e) e.stopPropagation(); const state = player.getPlayerState(); state === 1 ? player.pauseVideo() : player.playVideo(); }
 function nextSong(e) { if(e) e.stopPropagation(); if(currentIndex < currentPlaylist.length-1) playSong(currentIndex+1, currentPlaylist); }
 function prevSong(e) { if(e) e.stopPropagation(); if(currentIndex > 0) playSong(currentIndex-1, currentPlaylist); }
 
@@ -93,7 +114,7 @@ function seek(e) {
 }
 
 function updateProgress() {
-    if (player && player.getDuration) {
+    if (player && player.getDuration && player.getPlayerState() === 1) {
         const curr = player.getCurrentTime(), dur = player.getDuration();
         if (dur > 0) {
             document.getElementById('progress-fill').style.width = (curr / dur * 100) + "%";
@@ -110,7 +131,7 @@ function startDownload() {
     let offline = JSON.parse(localStorage.getItem('offlineSongs')) || [];
     if(!offline.find(x => x.id.videoId === s.id.videoId)) {
         offline.push(s); localStorage.setItem('offlineSongs', JSON.stringify(offline));
-        alert("Saved Offline!");
+        alert("Added to Library!");
     }
     hideMenu();
 }
@@ -126,7 +147,7 @@ function switchTab(id, btn) {
 function loadLibrary() {
     const list = document.getElementById('library-list');
     const offline = JSON.parse(localStorage.getItem('offlineSongs')) || [];
-    list.innerHTML = offline.length ? "" : "<h4>No saved songs</h4>";
+    list.innerHTML = offline.length ? "" : "<h4 style='padding:20px'>Library Empty</h4>";
     offline.forEach((s, i) => {
         const d = document.createElement('div'); d.className = 'playlist-card';
         d.innerHTML = `<img src="${s.snippet.thumbnails.high.url}"><h4>${s.snippet.title}</h4>`;
@@ -140,6 +161,6 @@ function openFullPlayer() { document.getElementById('full-player').classList.add
 function closeFullPlayer() { document.getElementById('full-player').classList.remove('active'); }
 function showMenu() { document.getElementById('options-menu').classList.add('show'); }
 function hideMenu() { document.getElementById('options-menu').classList.remove('show'); }
-function playAll() { if(document.querySelector('.song-item')) document.querySelector('.song-item').click(); }
+function playAll() { const first = document.querySelector('.song-item'); if(first) first.click(); }
 
 loadHome();
