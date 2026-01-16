@@ -1,4 +1,4 @@
-const API_KEY = 'AIzaSyBkr...'; // <-- Apni Key Yahan Dalein
+const API_KEY = 'AIzaSyBkricU1Xd041GGKd5BUXEXxfYU6fUzVzY'; // <-- Apni Key Yahan Dalein
 
 let player;
 
