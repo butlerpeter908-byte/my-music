@@ -1,31 +1,239 @@
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { background: #000; color: white; font-family: sans-serif; height: 100vh; overflow: hidden; }
-
-/* Main Layout */
-.main-container { display: flex; flex-direction: column; height: 100vh; }
-.content-area { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 100px; background: linear-gradient(#222, #000); }
-
-/* Spotify Style Horizontal Bottom Bar */
-.player-bar { 
-    position: fixed; bottom: 0; width: 100%; height: 90px; 
-    background: #000; border-top: 1px solid #282828;
-    display: flex; align-items: center; justify-content: space-between; padding: 0 15px;
-    z-index: 100;
+/* --- Base Reset --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-/* Left: Song Info */
-.current-song-info { display: flex; align-items: center; width: 30%; gap: 12px; }
-.mini-disk { width: 55px; height: 55px; border-radius: 4px; background-size: cover; background-color: #333; }
-.song-details h4 { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; }
-.song-details p { font-size: 11px; color: #b3b3b3; }
+body {
+    background-color: #000000;
+    color: #ffffff;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
 
-/* Center: Controls */
-.player-controls { display: flex; flex-direction: column; align-items: center; width: 40%; }
-.control-btns { display: flex; align-items: center; gap: 25px; color: #b3b3b3; font-size: 20px; margin-bottom: 8px; }
+/* --- Layout --- */
+.main-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* --- Top Search Header --- */
+.search-header {
+    background-color: #000000;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.search-bar {
+    background-color: #242424;
+    border-radius: 500px;
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    flex: 1;
+    max-width: 350px;
+}
+
+.search-bar i {
+    color: #b3b3b3;
+    margin-right: 10px;
+}
+
+.search-bar input {
+    background: transparent;
+    border: none;
+    color: white;
+    width: 100%;
+    outline: none;
+    font-size: 14px;
+}
+
+#search-btn {
+    background-color: #ffffff;
+    color: black;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 500px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* --- Content Area (List View) --- */
+.content-area {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background: linear-gradient(to bottom, #1f1f1f, #121212);
+    padding-bottom: 100px; /* Space for player bar */
+}
+
+.content-area h3 {
+    margin-bottom: 15px;
+    font-size: 22px;
+}
+
+.spotify-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.result-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.result-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.result-item img {
+    width: 50px;
+    height: 50px;
+    border-radius: 4px;
+    margin-right: 15px;
+    object-fit: cover;
+}
+
+.result-info h4 {
+    font-size: 15px;
+    color: #ffffff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 250px;
+}
+
+/* --- Bottom Player Bar (The Fix) --- */
+.player-bar {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 90px;
+    background-color: #000000;
+    border-top: 1px solid #282828;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 15px;
+    z-index: 1000;
+}
+
+/* Left Section */
+.current-song-info {
+    display: flex;
+    align-items: center;
+    width: 30%;
+    min-width: 150px;
+}
+
+.mini-disk {
+    width: 56px;
+    height: 56px;
+    background-color: #282828;
+    border-radius: 4px;
+    margin-right: 12px;
+    background-size: cover;
+    background-position: center;
+    flex-shrink: 0;
+}
+
+.song-details h4 {
+    font-size: 13px;
+    margin-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 140px;
+}
+
+.song-details p {
+    font-size: 11px;
+    color: #b3b3b3;
+}
+
+/* Center Section (Controls) */
+.player-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 40%;
+}
+
+.control-btns {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    color: #b3b3b3;
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+
 .control-btns i:hover { color: white; cursor: pointer; }
-.main-play-btn { background: white; border: none; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: black; }
 
-/* Search Results List */
-.result-item { display: flex; align-items: center; padding: 10px; border-radius: 8px; cursor: pointer; }
-.result-item:hover { background: rgba(255,255,255,0.1); }
-.result-item img { width: 45px; height: 45px; border-radius: 4px; margin-right: 12px; }
+.main-play-btn {
+    background-color: #ffffff;
+    color: black;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* Progress Bar */
+.progress-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    max-width: 400px;
+    color: #b3b3b3;
+    font-size: 11px;
+}
+
+.progress-bar-bg {
+    background-color: #4d4d4d;
+    height: 4px;
+    flex: 1;
+    border-radius: 2px;
+}
+
+.progress-bar-fill {
+    background-color: #ffffff;
+    height: 100%;
+    width: 0%;
+    border-radius: 2px;
+}
+
+/* Right Section */
+.volume-controls {
+    width: 30%;
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    color: #b3b3b3;
+}
+
+/* Responsive for Mobile */
+@media (max-width: 600px) {
+    .volume-controls, .shuffle-hide, .repeat-hide { display: none; }
+    .current-song-info { width: 50%; }
+    .player-controls { width: 50%; }
+}
