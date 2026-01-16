@@ -8,8 +8,8 @@ playBtn.addEventListener('click', () => {
             playBtn.innerText = 'PAUSE';
             disk.classList.add('play-animation');
         }).catch(error => {
-            console.log("Playback failed:", error);
-            alert("Please try again!");
+            console.error("Playback failed:", error);
+            alert("Gaana load nahi ho raha, please check karein ki Pika.mp3 sahi se upload hui hai!");
         });
     } else {
         audio.pause();
