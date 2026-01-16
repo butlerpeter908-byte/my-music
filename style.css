@@ -1,53 +1,36 @@
-* { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
-body { background: #121212; color: #fff; font-family: 'Helvetica Neue', Arial, sans-serif; overflow: hidden; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #121212; color: #fff; font-family: sans-serif; overflow: hidden; }
 .hidden { display: none !important; }
 
-/* Navigation */
-.top-nav { display: flex; justify-content: space-between; padding: 20px 15px; background: #000; align-items: center; }
-.nav-left button { background: none; border: none; color: #b3b3b3; font-weight: bold; margin-right: 15px; font-size: 16px; cursor: pointer; }
+.top-nav { display: flex; justify-content: space-between; padding: 15px; background: #000; align-items: center; }
+.nav-left button { background: none; border: none; color: #b3b3b3; margin-right: 15px; font-weight: bold; font-size: 16px; cursor: pointer; }
 .nav-left button.active { color: #fff; border-bottom: 2px solid #1DB954; }
-#settings-icon { font-size: 20px; color: #b3b3b3; }
 
-/* Home Content */
-.content-area { padding: 10px 15px; height: calc(100vh - 150px); overflow-y: auto; padding-bottom: 100px; }
-.category { margin-bottom: 30px; }
-.category h2 { font-size: 22px; margin-bottom: 15px; font-weight: 700; }
-.playlist-row { display: flex; overflow-x: auto; gap: 15px; scrollbar-width: none; }
-.playlist-row::-webkit-scrollbar { display: none; }
+.content-area { padding: 15px; height: calc(100vh - 150px); overflow-y: auto; padding-bottom: 120px; }
+.playlist-row { display: flex; overflow-x: auto; gap: 15px; margin-bottom: 25px; scrollbar-width: none; }
+.playlist-card { min-width: 145px; background: #181818; padding: 10px; border-radius: 8px; cursor: pointer; text-align: center; }
+.playlist-card img { width: 100%; aspect-ratio: 1/1; border-radius: 5px; object-fit: cover; }
+.playlist-card h4 { font-size: 12px; margin-top: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-.playlist-card { min-width: 155px; background: #181818; padding: 12px; border-radius: 8px; transition: 0.3s; cursor: pointer; }
-.playlist-card:active { background: #282828; }
-.playlist-card img { width: 100%; aspect-ratio: 1/1; border-radius: 6px; object-fit: cover; margin-bottom: 10px; }
-.playlist-card h4 { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #fff; }
-
-/* Search Box */
-.search-box { display: flex; background: #fff; border-radius: 4px; padding: 5px 10px; margin-bottom: 20px; }
-.search-box input { flex: 1; border: none; padding: 10px; font-size: 16px; color: #000; }
-.search-box button { background: none; border: none; font-size: 18px; padding: 0 10px; cursor: pointer; }
+.search-box { display: flex; gap: 10px; margin-bottom: 20px; background: #fff; border-radius: 5px; padding: 5px; }
+.search-box input { flex: 1; border: none; padding: 10px; font-size: 16px; outline: none; color: #000; }
+.search-box button { background: none; border: none; font-size: 20px; cursor: pointer; color: #000; padding: 0 10px; }
 .grid-view { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 
-/* Player Bar */
-.player-bar { position: fixed; bottom: 0; width: 100%; height: 80px; background: #000; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; border-top: 1px solid #282828; z-index: 500; }
-#youtube-player { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
-.mini-art { width: 48px; height: 48px; border-radius: 4px; background-size: cover; background-color: #333; }
-.song-info { display: flex; gap: 12px; align-items: center; flex: 1; }
-.song-info h4 { font-size: 14px; margin-bottom: 2px; }
-.song-info p { font-size: 12px; color: #b3b3b3; }
-.play-icon { background: #fff; border: none; width: 42px; height: 42px; border-radius: 50%; font-size: 20px; color: #000; }
+.player-bar { position: fixed; bottom: 0; width: 100%; height: 75px; background: #000; display: flex; align-items: center; padding: 0 15px; border-top: 1px solid #222; z-index: 500; cursor: pointer; }
+#youtube-player { position: absolute; opacity: 0; pointer-events: none; }
+.song-info { display: flex; align-items: center; flex: 1; gap: 10px; }
+.mini-art { width: 45px; height: 45px; background-size: cover; border-radius: 4px; background-color: #333; }
+.play-icon { background: #fff; border: none; width: 45px; height: 45px; border-radius: 50%; font-size: 20px; color: #000; }
 
-/* Full Player Overlay */
-.full-player-overlay { position: fixed; top: 100%; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, #535353, #121212); z-index: 1000; transition: 0.4s ease-in-out; padding: 40px 25px; }
+.full-player-overlay { position: fixed; top: 100%; left: 0; width: 100%; height: 100%; background: #121212; z-index: 1000; transition: 0.4s; padding: 25px; text-align: center; }
 .full-player-overlay.active { top: 0; }
-.header { display: flex; justify-content: space-between; align-items: center; }
-.big-dots { padding: 10px; cursor: pointer; }
-.big-dots i { font-size: 32px; }
-.art-box img { width: 100%; aspect-ratio: 1/1; border-radius: 12px; margin: 40px 0; box-shadow: 0 15px 50px rgba(0,0,0,0.5); }
-.controls { display: flex; justify-content: space-around; align-items: center; margin-top: 50px; }
-.controls i { font-size: 35px; }
-.big-play { background: #fff; width: 70px; height: 70px; border-radius: 50%; border: none; font-size: 28px; }
+.art-box img { width: 100%; aspect-ratio: 1/1; border-radius: 10px; margin: 30px 0; }
+.controls { display: flex; justify-content: space-around; align-items: center; margin-top: 40px; }
+.controls i { font-size: 35px; cursor: pointer; }
+.big-play { width: 70px; height: 70px; border-radius: 50%; border: none; background: #fff; font-size: 25px; cursor: pointer; }
 
-/* Modal */
-.modal { position: fixed; bottom: -100%; left: 0; width: 100%; background: #282828; border-radius: 20px 20px 0 0; padding: 25px; z-index: 2000; transition: 0.3s; }
+.modal { position: fixed; bottom: -100%; left: 0; width: 100%; background: #282828; padding: 25px; border-radius: 20px 20px 0 0; z-index: 2000; transition: 0.3s; }
 .modal.show { bottom: 0; }
-.option { padding: 18px 0; font-size: 18px; display: flex; gap: 15px; align-items: center; border-bottom: 1px solid #3e3e3e; }
-.close-btn { width: 100%; padding: 15px; margin-top: 20px; background: #1DB954; border: none; border-radius: 30px; color: #fff; font-weight: bold; }
+.option { padding: 15px; font-size: 18px; border-bottom: 1px solid #333; cursor: pointer; }
+.close-btn { width: 100%; padding: 15px; margin-top: 20px; border-radius: 30px; border: none; background: #1DB954; color: #fff; font-weight: bold; }
