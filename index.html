@@ -19,15 +19,24 @@
         </nav>
 
         <section id="home-section" class="content-area">
-            <div class="category"><h2>Best of 2025</h2><div class="playlist-row" id="best-2025"></div></div>
-            <div class="category"><h2>Bollywood Trending</h2><div class="playlist-row" id="trending-row"></div></div>
-            <div class="category"><h2>90s Special</h2><div class="playlist-row" id="bollywood-90s"></div></div>
+            <div id="playlist-view" class="hidden">
+                <div class="playlist-header">
+                    <i class="fa-solid fa-arrow-left" onclick="backToHome()"></i>
+                    <img id="playlist-cover" src="">
+                    <h2 id="playlist-name">Playlist</h2>
+                    <button class="play-all-btn" onclick="playAll()"><i class="fa-solid fa-play"></i> PLAY</button>
+                </div>
+                <div id="playlist-songs-list"></div>
+            </div>
+
+            <div id="home-default">
+                <div class="category"><h2>Your Playlists</h2><div class="playlist-row" id="main-playlists"></div></div>
+                <div class="category"><h2>Recently Played</h2><div class="playlist-row" id="recent-row"></div></div>
+            </div>
         </section>
 
         <section id="search-section" class="content-area hidden">
-            <div class="search-box">
-                <input type="text" id="search-input" placeholder="Search songs..." oninput="instantSearch()">
-            </div>
+            <div class="search-box"><input type="text" id="search-input" placeholder="Search songs..." onkeyup="instantSearch()"></div>
             <div id="results-list" class="grid-view"></div>
         </section>
 
@@ -50,22 +59,15 @@
     </div>
 
     <div id="full-player" class="full-player-overlay">
-        <div class="header">
-            <i class="fa-solid fa-chevron-down" onclick="closeFullPlayer()"></i>
-            <i class="fa-solid fa-ellipsis-vertical" onclick="showMenu()"></i>
-        </div>
+        <div class="header"><i class="fa-solid fa-chevron-down" onclick="closeFullPlayer()"></i><i class="fa-solid fa-ellipsis-vertical" onclick="showMenu()"></i></div>
         <div class="art-box"><img id="large-disk" src=""></div>
         <h2 id="full-title">Song Title</h2>
         <p id="full-artist">Artist</p>
-
         <div class="progress-container">
             <span id="current-time">0:00</span>
-            <div class="progress-bar" id="seek-bar" onclick="seek(event)">
-                <div id="progress-fill"></div>
-            </div>
+            <div class="progress-bar" id="seek-bar" onclick="seek(event)"><div id="progress-fill"></div></div>
             <span id="total-duration">0:00</span>
         </div>
-
         <div class="controls">
             <i class="fa-solid fa-backward-step" onclick="prevSong()"></i>
             <button id="full-play-btn" class="big-play" onclick="togglePlay(event)"><i class="fa-solid fa-play"></i></button>
@@ -75,7 +77,7 @@
 
     <div id="options-menu" class="modal">
         <div class="option" onclick="addToFav()"><i class="fa-solid fa-heart"></i> Favorite</div>
-        <div class="option" onclick="startDownload()"><i class="fa-solid fa-download"></i> Save to Offline</div>
+        <div class="option" onclick="startDownload()"><i class="fa-solid fa-download"></i> Save Offline</div>
         <button class="close-btn" onclick="hideMenu()">Close</button>
     </div>
 
