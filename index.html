@@ -3,17 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Music Player</title>
+    <title>Spotify Online Player</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="player-container">
-        <div class="disk" id="disk"></div>
-        <h2 id="title">Pika Song</h2>
-        <p id="artist">Now Playing</p>
-        
-        <audio id="audio" src="Pika.mp3"></audio>
+    <div class="search-container">
+        <input type="text" id="search-input" placeholder="Search any song...">
+        <button id="search-btn">🔍</button>
+    </div>
 
+    <div class="player-container">
+        <div id="youtube-player" style="display: none;"></div>
+        
+        <div class="disk" id="disk"></div>
+        <h2 id="title">Search a Song</h2>
+        <p id="artist">YouTube Music Stream</p>
+        
         <div class="controls">
             <button id="play-btn">PLAY</button>
         </div>
