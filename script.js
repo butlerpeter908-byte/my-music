@@ -1,25 +1,35 @@
-const audio = document.getElementById('audio');
-const playBtn = document.getElementById('play-btn');
-const disk = document.getElementById('disk');
+// Apni API key yahan paste karein
+const API_KEY = 'AIzaSyBkr...'; 
 
-// Play aur Pause ka logic
-playBtn.addEventListener('click', () => {
-    if (audio.paused) {
-        audio.play().then(() => {
-            playBtn.innerText = 'PAUSE';
-            disk.classList.add('play-animation');
-        }).catch(err => {
-            alert("Error: Music file load nahi ho rahi!");
-        });
-    } else {
-        audio.pause();
-        playBtn.innerText = 'PLAY';
-        disk.classList.remove('play-animation');
+const searchBtn = document.getElementById('search-btn');
+const searchInput = document.getElementById('search-input');
+const titleDisplay = document.getElementById('title');
+
+searchBtn.addEventListener('click', async () => {
+    const query = searchInput.value;
+    if (!query) return alert("Gaane ka naam likhein!");
+
+    titleDisplay.innerText = "Searching...";
+
+    try {
+        // YouTube API se search karna
+        const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${query}&type=video&key=${API_KEY}`);
+        const data = await res.json();
+
+        if (data.items.length > 0) {
+            const videoId = data.items[0].id.videoId;
+            const songTitle = data.items[0].snippet.title;
+
+            titleDisplay.innerText = songTitle;
+            
+            // Ab hume is VideoId ko play karna hai
+            // Play karne ke liye hume YouTube Player API chahiye hogi
+            alert("Gaana mil gaya: " + songTitle);
+        } else {
+            alert("Gaana nahi mila!");
+        }
+    } catch (err) {
+        console.error("API Error:", err);
+        alert("Kuch galti hui, check karein key restrict hui ya nahi.");
     }
-});
-
-// JAISE HI GAANA KHATAM HO, YE BUTTON KO WAPAS 'PLAY' KAR DEGA
-audio.addEventListener('ended', () => {
-    playBtn.innerText = 'PLAY';
-    disk.classList.remove('play-animation');
 });
