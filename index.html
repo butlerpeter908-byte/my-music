@@ -3,44 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spotify Pro - Full Version</title>
+    <title>Spotify Clone Pro</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-
     <div class="main-container">
         <header class="search-header">
             <div class="search-bar">
                 <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="search-input" placeholder="Search songs, artists...">
+                <input type="text" id="search-input" placeholder="Search for songs...">
             </div>
             <button id="search-btn">Search</button>
         </header>
 
         <main class="content-area">
-            <h3>Top results</h3>
-            <div id="results-list" class="spotify-list">
-                <p class="empty-msg">Search for music to start listening.</p>
-            </div>
+            <h3>Top Results</h3>
+            <div id="results-list" class="spotify-list"></div>
         </main>
 
         <footer class="player-bar">
             <div id="youtube-player" style="display: none;"></div>
             
-            <div class="current-song-info" id="open-full-btn">
+            <div class="current-song-info" id="mini-player-trigger">
                 <div class="mini-disk" id="disk"></div>
                 <div class="song-details">
-                    <h4 id="title">No Song Selected</h4>
+                    <h4 id="title">No Song</h4>
                     <p id="artist">YouTube Music</p>
                 </div>
             </div>
 
             <div class="player-controls">
-                <div class="control-btns">
-                    <i class="fa-solid fa-backward-step" id="prev-btn"></i>
+                <div class="mini-btns">
+                    <i class="fa-solid fa-backward-step" id="prev-btn-mini"></i>
                     <button id="play-btn" class="main-play-btn"><i class="fa-solid fa-play"></i></button>
-                    <i class="fa-solid fa-forward-step" id="next-btn"></i>
+                    <i class="fa-solid fa-forward-step" id="next-btn-mini"></i>
                 </div>
             </div>
         </footer>
@@ -52,11 +49,11 @@
             <p class="playing-from">PLAYING FROM SEARCH</p>
             
             <div class="large-art-container">
-                <img id="large-disk" src="https://via.placeholder.com/300" alt="Album Art">
+                <img id="large-disk" src="" alt="Album Art">
             </div>
 
             <div class="full-song-info">
-                <div class="song-text">
+                <div>
                     <h2 id="full-title">Song Title</h2>
                     <p id="full-artist">Artist Name</p>
                 </div>
@@ -64,23 +61,21 @@
             </div>
 
             <div class="full-progress">
-                <div class="progress-bar-bg">
-                    <div class="progress-bar-fill" id="full-progress-fill"></div>
-                </div>
-                <div class="time-stamps"><span>0:00</span><span id="duration">3:45</span></div>
+                <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill"></div></div>
+                <div class="time-stamps"><span>0:00</span><span id="duration-text">-:-</span></div>
             </div>
 
             <div class="full-controls">
                 <i class="fa-solid fa-shuffle"></i>
-                <i class="fa-solid fa-backward-step" id="full-prev"></i>
-                <button id="full-play-pause" class="big-play-btn"><i class="fa-solid fa-play"></i></button>
-                <i class="fa-solid fa-forward-step" id="full-next"></i>
+                <i class="fa-solid fa-backward-step" id="prev-btn-full"></i>
+                <button id="full-play-btn" class="big-play-btn"><i class="fa-solid fa-play"></i></button>
+                <i class="fa-solid fa-forward-step" id="next-btn-full"></i>
                 <i class="fa-solid fa-repeat"></i>
             </div>
 
             <div class="extra-options">
-                <i class="fa-solid fa-download" id="download-btn"></i>
-                <i class="fa-solid fa-plus" title="Save to Playlist"></i>
+                <i class="fa-solid fa-download"></i>
+                <i class="fa-solid fa-plus"></i>
                 <i class="fa-solid fa-share-nodes"></i>
             </div>
         </div>
