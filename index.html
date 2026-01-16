@@ -3,31 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spotify Clone Pro</title>
+    <title>Spotify Pro Clone</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="main-container">
-        <header class="search-header">
-            <div class="search-bar">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="search-input" placeholder="Search for songs...">
+        <nav class="top-nav">
+            <div class="nav-left">
+                <button id="home-tab" class="active">Home</button>
+                <button id="search-tab">Search</button>
             </div>
-            <button id="search-btn">Search</button>
-        </header>
+            <div class="nav-right">
+                <i class="fa-solid fa-gear" id="settings-btn" title="Settings"></i>
+                <div class="profile-icon"><i class="fa-solid fa-user"></i></div>
+            </div>
+        </nav>
 
-        <main class="content-area">
-            <h3>Top Results</h3>
+        <section id="home-section" class="content-area">
+            <div class="category">
+                <h2>Bollywood Hitlist</h2>
+                <div class="playlist-row" id="hits-row"></div>
+            </div>
+            <div class="category">
+                <h2>Monsoon Special</h2>
+                <div class="playlist-row" id="monsoon-row"></div>
+            </div>
+            <div class="category">
+                <h2>Trending Now</h2>
+                <div class="playlist-row" id="trending-row"></div>
+            </div>
+        </section>
+
+        <section id="search-section" class="content-area hidden">
+            <div class="search-bar-container">
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="search-input" placeholder="Search for songs, artists...">
+                </div>
+                <button id="search-btn">Search</button>
+            </div>
             <div id="results-list" class="spotify-list"></div>
-        </main>
+        </section>
 
         <footer class="player-bar">
             <div id="youtube-player" style="display: none;"></div>
             <div class="current-song-info" id="mini-player-trigger">
                 <div class="mini-disk" id="disk"></div>
                 <div class="song-details">
-                    <h4 id="title">No Song Selected</h4>
+                    <h4 id="title">Select a song</h4>
                     <p id="artist">YouTube Music</p>
                 </div>
             </div>
@@ -76,18 +100,24 @@
                 <div class="next-song-info">
                     <img id="next-song-img" src="" alt="">
                     <div class="next-text">
-                        <h4 id="next-song-title">Next song name</h4>
-                        <p id="next-song-artist">Artist</p>
+                        <h4 id="next-song-title">-</h4>
+                        <p id="next-song-artist">-</p>
                     </div>
                 </div>
             </div>
         </div>
 
+        <div id="settings-modal" class="options-popup">
+            <h3>Settings</h3>
+            <div class="menu-item" id="theme-toggle"><i class="fa-solid fa-circle-half-stroke"></i> Switch Theme</div>
+            <button id="close-settings" class="close-pop-btn">Close</button>
+        </div>
+
         <div id="options-menu" class="options-popup">
-            <div class="menu-item" id="download-opt"><i class="fa-solid fa-download"></i> Download</div>
-            <div class="menu-item" id="fav-opt"><i class="fa-solid fa-heart"></i> Add to Favorite</div>
-            <div class="menu-item" id="shuffle-opt"><i class="fa-solid fa-shuffle"></i> Shuffle Playlist</div>
-            <button id="close-menu">Close</button>
+            <div class="menu-item"><i class="fa-solid fa-download"></i> Download</div>
+            <div class="menu-item"><i class="fa-solid fa-heart"></i> Add to Favorite</div>
+            <div class="menu-item"><i class="fa-solid fa-shuffle"></i> Shuffle</div>
+            <button id="close-menu" class="close-pop-btn">Close</button>
         </div>
     </div>
 
