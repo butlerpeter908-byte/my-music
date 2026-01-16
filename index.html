@@ -15,7 +15,7 @@
                 <button onclick="switchTab('search-section', this)">Search</button>
                 <button onclick="switchTab('library-section', this)">Library</button>
             </div>
-            <i class="fa-solid fa-gear" id="settings-btn" onclick="openSettings()"></i>
+            <i class="fa-solid fa-gear" onclick="alert('Settings: High Quality Audio')"></i>
         </nav>
 
         <section id="home-section" class="content-area">
@@ -27,13 +27,11 @@
         <section id="search-section" class="content-area hidden">
             <div class="search-box">
                 <input type="text" id="search-input" placeholder="Search songs..." oninput="instantSearch()">
-                <button id="search-btn-trigger"><i class="fa-solid fa-magnifying-glass"></i></button>
             </div>
             <div id="results-list" class="grid-view"></div>
         </section>
 
         <section id="library-section" class="content-area hidden">
-            <div class="lib-header"><h2>Your Collection</h2></div>
             <div id="library-list" class="grid-view"></div>
         </section>
 
@@ -43,14 +41,18 @@
                 <div class="mini-art" id="disk"></div>
                 <div class="text"><h4 id="title">Select a song</h4><p id="artist">Artist</p></div>
             </div>
-            <button id="play-btn" class="play-icon" onclick="togglePlay(event)"><i class="fa-solid fa-play"></i></button>
+            <div class="mini-controls">
+                <button class="mini-btn" onclick="prevSong()"><i class="fa-solid fa-backward-step"></i></button>
+                <button id="play-btn" class="play-icon" onclick="togglePlay(event)"><i class="fa-solid fa-play"></i></button>
+                <button class="mini-btn" onclick="nextSong()"><i class="fa-solid fa-forward-step"></i></button>
+            </div>
         </footer>
     </div>
 
     <div id="full-player" class="full-player-overlay">
         <div class="header">
             <i class="fa-solid fa-chevron-down" onclick="closeFullPlayer()"></i>
-            <div id="dots-menu-btn" style="padding:10px;"><i class="fa-solid fa-ellipsis-vertical" style="font-size:35px;"></i></div>
+            <i class="fa-solid fa-ellipsis-vertical" onclick="showMenu()"></i>
         </div>
         <div class="art-box"><img id="large-disk" src=""></div>
         <h2 id="full-title">Song Title</h2>
@@ -58,7 +60,7 @@
 
         <div class="progress-container">
             <span id="current-time">0:00</span>
-            <div class="progress-bar" id="seek-bar-container" onclick="seekSong(event)">
+            <div class="progress-bar" id="seek-bar" onclick="seek(event)">
                 <div id="progress-fill"></div>
             </div>
             <span id="total-duration">0:00</span>
@@ -69,16 +71,11 @@
             <button id="full-play-btn" class="big-play" onclick="togglePlay(event)"><i class="fa-solid fa-play"></i></button>
             <i class="fa-solid fa-forward-step" onclick="nextSong()"></i>
         </div>
-
-        <div class="up-next-box">
-            <p>UP NEXT</p>
-            <h4 id="next-song-name">Nothing in queue</h4>
-        </div>
     </div>
 
     <div id="options-menu" class="modal">
-        <div class="option" id="fav-btn-trigger"><i class="fa-solid fa-heart"></i> Add to Favorite</div>
-        <div class="option" id="dl-btn-trigger"><i class="fa-solid fa-download"></i> Download & Store</div>
+        <div class="option" onclick="addToFav()"><i class="fa-solid fa-heart"></i> Favorite</div>
+        <div class="option" onclick="startDownload()"><i class="fa-solid fa-download"></i> Save to Offline</div>
         <button class="close-btn" onclick="hideMenu()">Close</button>
     </div>
 
