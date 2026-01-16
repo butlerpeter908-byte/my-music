@@ -1,7 +1,7 @@
 const API_KEY = 'AIzaSyBkricU1Xd041GGKd5BUXEXxfYU6fUzVzY'; 
 let player, currentPlaylist = [], currentIndex = -1;
 
-// YouTube Setup
+// YouTube API
 var tag = document.createElement('script');
 tag.src = "https://www.youtube.com/iframe_api";
 var firstScriptTag = document.getElementsByTagName('script')[0];
@@ -10,10 +10,7 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 function onYouTubeIframeAPIReady() {
     player = new YT.Player('youtube-player', {
         height: '0', width: '0',
-        events: { 'onStateChange': (e) => {
-            if(e.data === 0 && currentIndex < currentPlaylist.length - 1) playSong(currentIndex + 1);
-            updatePlayButton(e.data);
-        }}
+        events: { 'onStateChange': onPlayerStateChange }
     });
 }
 
@@ -21,15 +18,24 @@ function playSong(index) {
     if(index < 0 || index >= currentPlaylist.length) return;
     currentIndex = index;
     const item = currentPlaylist[index];
-    player.loadVideoById(item.id.videoId);
+    const videoId = item.id.videoId;
+    player.loadVideoById(videoId);
+    
+    // Update UI
     document.getElementById('title').innerText = item.snippet.title;
-    document.getElementById('disk').style.backgroundImage = `url('${item.snippet.thumbnails.high.url}')`;
+    document.getElementById('full-title').innerText = item.snippet.title;
+    document.getElementById('artist').innerText = item.snippet.channelTitle;
+    document.getElementById('full-artist').innerText = item.snippet.channelTitle;
+    const imgUrl = item.snippet.thumbnails.high.url;
+    document.getElementById('disk').style.backgroundImage = `url('${imgUrl}')`;
+    document.getElementById('large-disk').src = imgUrl;
 }
 
-// Search Logic
-document.getElementById('search-btn').addEventListener('click', async () => {
+// Search Logic (Filtering Shorts)
+document.getElementById('search-btn').onclick = async () => {
     const query = document.getElementById('search-input').value;
-    const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${query}&type=video&key=${API_KEY}`);
+    if(!query) return;
+    const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${query + " official music"}&type=video&videoDuration=medium&key=${API_KEY}`);
     const data = await res.json();
     currentPlaylist = data.items;
     const list = document.getElementById('results-list');
@@ -41,15 +47,31 @@ document.getElementById('search-btn').addEventListener('click', async () => {
         div.onclick = () => playSong(i);
         list.appendChild(div);
     });
-});
-
-// Buttons
-document.getElementById('prev-btn').onclick = () => playSong(currentIndex - 1);
-document.getElementById('next-btn').onclick = () => playSong(currentIndex + 1);
-document.getElementById('play-btn').onclick = () => {
-    player.getPlayerState() === 1 ? player.pauseVideo() : player.playVideo();
 };
 
-function updatePlayButton(state) {
-    document.getElementById('play-btn').innerHTML = state === 1 ? '<i class="fa-solid fa-pause"></i>' : '<i class="fa-solid fa-play"></i>';
+// Overlay Control
+document.getElementById('open-full-btn').onclick = () => document.getElementById('full-player').classList.add('active');
+document.getElementById('close-full-player').onclick = () => document.getElementById('full-player').classList.remove('active');
+
+// Playback Buttons
+const togglePlay = () => player.getPlayerState() === 1 ? player.pauseVideo() : player.playVideo();
+document.getElementById('play-btn').onclick = togglePlay;
+document.getElementById('full-play-pause').onclick = togglePlay;
+document.getElementById('next-btn').onclick = () => playSong(currentIndex + 1);
+document.getElementById('full-next').onclick = () => playSong(currentIndex + 1);
+document.getElementById('prev-btn').onclick = () => playSong(currentIndex - 1);
+document.getElementById('full-prev').onclick = () => playSong(currentIndex - 1);
+
+function onPlayerStateChange(e) {
+    const icon = e.data === 1 ? '<i class="fa-solid fa-pause"></i>' : '<i class="fa-solid fa-play"></i>';
+    document.getElementById('play-btn').innerHTML = icon;
+    document.getElementById('full-play-pause').innerHTML = icon;
+    if(e.data === 0) playSong(currentIndex + 1);
 }
+
+// Fav Button Toggle
+document.getElementById('fav-btn').onclick = function() {
+    this.classList.toggle('fa-regular');
+    this.classList.toggle('fa-solid');
+    this.style.color = this.classList.contains('fa-solid') ? '#1DB954' : 'white';
+};
