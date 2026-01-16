@@ -22,25 +22,22 @@
         </nav>
 
         <section id="home-section" class="content-area">
-            <div class="category">
-                <h2>Recommended Music</h2>
-                <div class="playlist-grid" id="hits-row"></div>
-            </div>
-            <div class="category">
-                <h2>Trending Hits</h2>
-                <div class="playlist-grid" id="trending-row"></div>
-            </div>
+            <div class="category"><h2>Best of 2025</h2><div class="playlist-row" id="best-2025"></div></div>
+            <div class="category"><h2>Bollywood Trending</h2><div class="playlist-row" id="bollywood-trending"></div></div>
+            <div class="category"><h2>Bollywood Hitlist</h2><div class="playlist-row" id="bollywood-hits"></div></div>
+            <div class="category"><h2>Bollywood 90s Special</h2><div class="playlist-row" id="bollywood-90s"></div></div>
+            <div class="category"><h2>Bollywood Old is Gold</h2><div class="playlist-row" id="bollywood-old"></div></div>
         </section>
 
         <section id="search-section" class="content-area hidden">
             <div class="search-bar-container">
                 <div class="search-bar">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="search-input" placeholder="Search for songs or artists...">
+                    <input type="text" id="search-input" placeholder="Search music only...">
                 </div>
                 <button id="search-btn">Search</button>
             </div>
-            <div id="results-list" class="playlist-grid"></div>
+            <div id="results-list" class="results-grid"></div>
         </section>
 
         <section id="library-section" class="content-area hidden">
@@ -55,7 +52,7 @@
                     <div class="folder-info"><h3>Downloads</h3><p id="dl-count">0 songs</p></div>
                 </div>
             </div>
-            <div id="library-list" class="playlist-grid"></div>
+            <div id="library-list" class="results-grid"></div>
         </section>
 
         <footer class="player-bar">
@@ -72,34 +69,36 @@
     </div>
 
     <div id="full-player" class="full-player-overlay">
-        <div class="full-player-header">
-            <button id="close-full-player"><i class="fa-solid fa-chevron-down"></i></button>
-            <div class="options-trigger" id="menu-dots-btn"><i class="fa-solid fa-ellipsis-vertical"></i></div>
-        </div>
-        <div class="large-art-container"><img id="large-disk" src="" alt="Cover"></div>
-        <div class="full-song-info">
-            <div class="song-text">
-                <h2 id="full-title">Song Title</h2>
-                <p id="full-artist">Artist Name</p>
+        <div class="full-player-content">
+            <div class="full-player-header">
+                <button id="close-full-player"><i class="fa-solid fa-chevron-down"></i></button>
+                <div class="options-trigger" id="menu-dots-btn"><i class="fa-solid fa-ellipsis-vertical"></i></div>
             </div>
-        </div>
-        <div class="full-progress">
-            <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill"></div></div>
-            <div class="time-stamps"><span id="current-time">0:00</span><span id="duration-time">0:00</span></div>
-        </div>
-        <div class="full-controls">
-            <i class="fa-solid fa-backward-step" id="prev-btn"></i>
-            <button id="full-play-btn" class="big-play-btn"><i class="fa-solid fa-play"></i></button>
-            <i class="fa-solid fa-forward-step" id="next-btn"></i>
+            <div class="large-art-container"><img id="large-disk" src="" alt=""></div>
+            <div class="full-song-info">
+                <div class="song-text">
+                    <h2 id="full-title">Song Title</h2>
+                    <p id="full-artist">Artist Name</p>
+                </div>
+            </div>
+            <div class="full-progress">
+                <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill"></div></div>
+                <div class="time-stamps"><span id="current-time">0:00</span><span id="duration-time">0:00</span></div>
+            </div>
+            <div class="full-controls">
+                <i class="fa-solid fa-backward-step" id="prev-btn"></i>
+                <button id="full-play-btn" class="big-play-btn"><i class="fa-solid fa-play"></i></button>
+                <i class="fa-solid fa-forward-step" id="next-btn"></i>
+            </div>
         </div>
     </div>
 
     <div id="options-menu" class="options-popup">
-        <div class="menu-item" id="download-trigger"><i class="fa-solid fa-download"></i> Download to Device</div>
+        <div class="menu-item" id="download-trigger"><i class="fa-solid fa-download"></i> Download MP3</div>
         <div class="menu-item" id="fav-trigger"><i class="fa-solid fa-heart"></i> Save to Favorites</div>
         <button id="close-menu" class="close-pop-btn">Close</button>
     </div>
-    
+
     <div id="download-toast" class="toast hidden">Downloading...</div>
 
     <script src="script.js"></script>
