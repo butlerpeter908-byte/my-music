@@ -3,7 +3,7 @@ let player, currentPlaylist = [], currentIndex = -1;
 let favorites = JSON.parse(localStorage.getItem('favSongs')) || [];
 let downloads = JSON.parse(localStorage.getItem('dlSongs')) || [];
 
-// Tabs Navigation
+// Tabs
 function switchTab(btn, sid) {
     document.querySelectorAll('.nav-left button').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.content-area').forEach(s => s.classList.add('hidden'));
@@ -11,31 +11,32 @@ function switchTab(btn, sid) {
     document.getElementById(sid).classList.remove('hidden');
     if(sid === 'library-section') updateLibCounts();
 }
-
 document.getElementById('home-tab').onclick = (e) => switchTab(e.target, 'home-section');
 document.getElementById('search-tab').onclick = (e) => switchTab(e.target, 'search-section');
 document.getElementById('library-tab').onclick = (e) => switchTab(e.target, 'library-section');
 
-// YouTube Music Category Lock (10) + Shorts Filter
+// Music Fetch (Locks Category 10 for Music)
 async function fetchMusic(q, rowId = null) {
-    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=12&q=${q}&type=video&videoCategoryId=10&videoDuration=medium&key=${API_KEY}`;
-    const res = await fetch(url);
-    const data = await res.json();
-    const filtered = data.items.filter(v => !v.snippet.title.toLowerCase().includes('shorts'));
-
-    if(rowId) {
-        const row = document.getElementById(rowId);
-        row.innerHTML = "";
-        filtered.forEach((item, i) => {
-            const card = document.createElement('div'); card.className = 'playlist-card';
-            card.innerHTML = `<img src="${item.snippet.thumbnails.high.url}"><h4>${item.snippet.title.substring(0,30)}...</h4>`;
-            card.onclick = () => { currentPlaylist = filtered; playSong(i); };
-            row.appendChild(card);
-        });
-    } else return filtered;
+    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${q}&type=video&videoCategoryId=10&videoDuration=medium&key=${API_KEY}`;
+    try {
+        const res = await fetch(url);
+        const data = await res.json();
+        const filtered = data.items.filter(v => !v.snippet.title.toLowerCase().includes('shorts'));
+        
+        if(rowId) {
+            const row = document.getElementById(rowId);
+            row.innerHTML = "";
+            filtered.forEach((item, i) => {
+                const card = document.createElement('div'); card.className = 'playlist-card';
+                card.innerHTML = `<img src="${item.snippet.thumbnails.high.url}"><h4>${item.snippet.title.substring(0,25)}...</h4>`;
+                card.onclick = () => { currentPlaylist = filtered; playSong(i); };
+                row.appendChild(card);
+            });
+        } else return filtered;
+    } catch(e) { console.error("Error fetching", e); }
 }
 
-// YT API Loader
+// YT API
 var tag = document.createElement('script'); tag.src = "https://www.youtube.com/iframe_api";
 document.getElementsByTagName('script')[0].parentNode.insertBefore(tag, document.getElementsByTagName('script')[0]);
 function onYouTubeIframeAPIReady() {
@@ -55,41 +56,11 @@ function playSong(idx) {
     document.getElementById('large-disk').src = s.snippet.thumbnails.high.url;
 }
 
-// Search & Library
-document.getElementById('search-btn').onclick = async () => {
-    const q = document.getElementById('search-input').value;
-    currentPlaylist = await fetchMusic(q);
-    const list = document.getElementById('results-list'); list.innerHTML = "";
-    currentPlaylist.forEach((s, i) => {
-        const d = document.createElement('div'); d.className = 'playlist-card';
-        d.innerHTML = `<img src="${s.snippet.thumbnails.high.url}"><h4>${s.snippet.title}</h4>`;
-        d.onclick = () => playSong(i);
-        list.appendChild(d);
-    });
-};
-
-function updateLibCounts() {
-    document.getElementById('fav-count').innerText = `${favorites.length} songs`;
-    document.getElementById('dl-count').innerText = `${downloads.length} songs`;
-}
-
-// Download & Favorites Logic
-document.getElementById('download-trigger').onclick = () => {
-    const s = currentPlaylist[currentIndex];
-    const toast = document.getElementById('download-toast');
-    toast.innerText = "Downloading...";
-    toast.classList.remove('hidden');
-    
-    if(!downloads.find(x => x.id.videoId === s.id.videoId)) {
-        downloads.push(s); localStorage.setItem('dlSongs', JSON.stringify(downloads));
-    }
-    
-    // Redirect to external MP3 Downloader for real storage
-    window.open(`https://www.youtubepp.com/watch?v=${s.id.videoId}`, '_blank');
-    
-    setTimeout(() => { toast.classList.add('hidden'); updateLibCounts(); }, 2000);
-    document.getElementById('options-menu').classList.remove('show');
-};
+// Controls & Menu
+document.getElementById('mini-player-trigger').onclick = () => document.getElementById('full-player').classList.add('active');
+document.getElementById('close-full-player').onclick = () => document.getElementById('full-player').classList.remove('active');
+document.getElementById('menu-dots-btn').onclick = () => document.getElementById('options-menu').classList.add('show');
+document.getElementById('close-menu').onclick = () => document.getElementById('options-menu').classList.remove('show');
 
 document.getElementById('fav-trigger').onclick = () => {
     const s = currentPlaylist[currentIndex];
@@ -101,12 +72,29 @@ document.getElementById('fav-trigger').onclick = () => {
     updateLibCounts();
 };
 
+document.getElementById('download-trigger').onclick = () => {
+    const s = currentPlaylist[currentIndex];
+    const toast = document.getElementById('download-toast');
+    toast.classList.remove('hidden');
+    if(!downloads.find(x => x.id.videoId === s.id.videoId)) {
+        downloads.push(s); localStorage.setItem('dlSongs', JSON.stringify(downloads));
+    }
+    window.open(`https://www.y2mate.com/youtube/${s.id.videoId}`, '_blank');
+    setTimeout(() => { toast.classList.add('hidden'); updateLibCounts(); }, 2000);
+    document.getElementById('options-menu').classList.remove('show');
+};
+
+function updateLibCounts() {
+    document.getElementById('fav-count').innerText = `${favorites.length} songs`;
+    document.getElementById('dl-count').innerText = `${downloads.length} songs`;
+}
+
 document.getElementById('fav-folder-btn').onclick = () => renderLib(favorites, "Favorites");
 document.getElementById('dl-folder-btn').onclick = () => renderLib(downloads, "Downloads");
 
 function renderLib(songs, title) {
     const list = document.getElementById('library-list');
-    list.innerHTML = `<h3 style="grid-column: 1/-1; color:#1DB954;">${title}</h3>`;
+    list.innerHTML = `<h3 style="grid-column:1/3; color:#1DB954; margin:10px 0;">${title}</h3>`;
     songs.forEach((s, i) => {
         const d = document.createElement('div'); d.className = 'playlist-card';
         d.innerHTML = `<img src="${s.snippet.thumbnails.high.url}"><h4>${s.snippet.title}</h4>`;
@@ -115,18 +103,6 @@ function renderLib(songs, title) {
     });
 }
 
-// Controls
-document.getElementById('mini-player-trigger').onclick = () => document.getElementById('full-player').classList.add('active');
-document.getElementById('close-full-player').onclick = () => document.getElementById('full-player').classList.remove('active');
-document.getElementById('menu-dots-btn').onclick = () => document.getElementById('options-menu').classList.add('show');
-document.getElementById('close-menu').onclick = () => document.getElementById('options-menu').classList.remove('show');
-
-const toggle = () => player.getPlayerState() === 1 ? player.pauseVideo() : player.playVideo();
-document.getElementById('play-btn').onclick = toggle;
-document.getElementById('full-play-btn').onclick = toggle;
-document.getElementById('next-btn').onclick = () => playSong(currentIndex + 1);
-document.getElementById('prev-btn').onclick = () => playSong(currentIndex - 1);
-
 function onPlayerStateChange(e) {
     const i = e.data === 1 ? '<i class="fa-solid fa-pause"></i>' : '<i class="fa-solid fa-play"></i>';
     document.getElementById('play-btn').innerHTML = i;
@@ -134,7 +110,14 @@ function onPlayerStateChange(e) {
     if(e.data === 0) playSong(currentIndex + 1);
 }
 
-// Initial Load
-fetchMusic("New Hindi Music 2026", "hits-row");
-fetchMusic("Top English Hits", "trending-row");
+// Init Home Screen
+async function init() {
+    await fetchMusic("Best Bollywood Songs 2025", "best-2025");
+    await fetchMusic("Latest Bollywood Trending", "bollywood-trending");
+    await fetchMusic("Bollywood Top Hits", "bollywood-hits");
+    await fetchMusic("90s Bollywood Hits", "bollywood-90s");
+    await fetchMusic("Old Bollywood Gold", "bollywood-old");
+}
+
+init();
 updateLibCounts();
