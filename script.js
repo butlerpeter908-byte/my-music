@@ -1,11 +1,10 @@
-const API_KEY = 'AIzaSyBkricU1Xd041GGKd5BUXEXxfYU6fUzVzY'; 
+const API_KEY = 'AIzaSyBkricU1Xd041GGKd5BUXEXxfYU6fUzVzY';
 let player, currentPlaylist = [], currentIndex = -1;
 
-// YouTube API
+// YouTube IFrame API Load
 var tag = document.createElement('script');
 tag.src = "https://www.youtube.com/iframe_api";
-var firstScriptTag = document.getElementsByTagName('script')[0];
-firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+document.getElementsByTagName('script')[0].parentNode.insertBefore(tag, document.getElementsByTagName('script')[0]);
 
 function onYouTubeIframeAPIReady() {
     player = new YT.Player('youtube-player', {
@@ -18,10 +17,9 @@ function playSong(index) {
     if(index < 0 || index >= currentPlaylist.length) return;
     currentIndex = index;
     const item = currentPlaylist[index];
-    const videoId = item.id.videoId;
-    player.loadVideoById(videoId);
+    player.loadVideoById(item.id.videoId);
     
-    // Update UI
+    // Update UI Elements
     document.getElementById('title').innerText = item.snippet.title;
     document.getElementById('full-title').innerText = item.snippet.title;
     document.getElementById('artist').innerText = item.snippet.channelTitle;
@@ -31,13 +29,14 @@ function playSong(index) {
     document.getElementById('large-disk').src = imgUrl;
 }
 
-// Search Logic (Filtering Shorts)
+// Search Function
 document.getElementById('search-btn').onclick = async () => {
-    const query = document.getElementById('search-input').value;
-    if(!query) return;
-    const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${query + " official music"}&type=video&videoDuration=medium&key=${API_KEY}`);
+    const q = document.getElementById('search-input').value;
+    if(!q) return;
+    const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${q + " music"}&type=video&key=${API_KEY}`);
     const data = await res.json();
     currentPlaylist = data.items;
+    
     const list = document.getElementById('results-list');
     list.innerHTML = "";
     data.items.forEach((item, i) => {
@@ -49,27 +48,36 @@ document.getElementById('search-btn').onclick = async () => {
     });
 };
 
-// Overlay Control
-document.getElementById('open-full-btn').onclick = () => document.getElementById('full-player').classList.add('active');
-document.getElementById('close-full-player').onclick = () => document.getElementById('full-player').classList.remove('active');
+// --- FIX: OPEN FULL PLAYER LOGIC ---
+document.getElementById('mini-player-trigger').onclick = function() {
+    document.getElementById('full-player').classList.add('active');
+};
 
-// Playback Buttons
+document.getElementById('close-full-player').onclick = function() {
+    document.getElementById('full-player').classList.remove('active');
+};
+
+// Play/Pause Control
 const togglePlay = () => player.getPlayerState() === 1 ? player.pauseVideo() : player.playVideo();
 document.getElementById('play-btn').onclick = togglePlay;
-document.getElementById('full-play-pause').onclick = togglePlay;
-document.getElementById('next-btn').onclick = () => playSong(currentIndex + 1);
-document.getElementById('full-next').onclick = () => playSong(currentIndex + 1);
-document.getElementById('prev-btn').onclick = () => playSong(currentIndex - 1);
-document.getElementById('full-prev').onclick = () => playSong(currentIndex - 1);
+document.getElementById('full-play-btn').onclick = togglePlay;
+
+// Next/Prev Control
+const nextSong = () => playSong(currentIndex + 1);
+const prevSong = () => playSong(currentIndex - 1);
+document.getElementById('next-btn-mini').onclick = nextSong;
+document.getElementById('next-btn-full').onclick = nextSong;
+document.getElementById('prev-btn-mini').onclick = prevSong;
+document.getElementById('prev-btn-full').onclick = prevSong;
 
 function onPlayerStateChange(e) {
     const icon = e.data === 1 ? '<i class="fa-solid fa-pause"></i>' : '<i class="fa-solid fa-play"></i>';
     document.getElementById('play-btn').innerHTML = icon;
-    document.getElementById('full-play-pause').innerHTML = icon;
-    if(e.data === 0) playSong(currentIndex + 1);
+    document.getElementById('full-play-btn').innerHTML = icon;
+    if(e.data === 0) playSong(currentIndex + 1); // Auto-next
 }
 
-// Fav Button Toggle
+// Favorite Toggle
 document.getElementById('fav-btn').onclick = function() {
     this.classList.toggle('fa-regular');
     this.classList.toggle('fa-solid');
