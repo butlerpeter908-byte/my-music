@@ -1,186 +1,116 @@
-const API_KEY = 'AIzaSyBkricU1Xd041GGKd5BUXEXxfYU6fUzVzY';
-let player, currentPlaylist = [], currentIndex = -1;
+const API_KEY = 'YOUR_NEW_API_KEY_HERE'; 
+let player, currentList = [], currentIndex = -1, searchTimer;
 
-// YouTube API
-var tag = document.createElement('script'); tag.src = "https://www.youtube.com/iframe_api";
-document.getElementsByTagName('script')[0].parentNode.insertBefore(tag, document.getElementsByTagName('script')[0]);
+// Load YT API
+var tag = document.createElement('script');
+tag.src = "https://www.youtube.com/iframe_api";
+document.head.appendChild(tag);
 
 function onYouTubeIframeAPIReady() {
-    player = new YT.Player('youtube-player', {
+    player = new YT.Player('yt-player-container', {
         height: '0', width: '0',
         events: { 
             'onStateChange': onPlayerStateChange,
-            'onReady': () => setInterval(updateProgress, 1000)
+            'onReady': () => { setInterval(updateProgress, 1000); init(); }
         }
     });
 }
 
-// 1. Home Playlist Data (Image Style)
-const playlistsData = [
-    { id: 'p1', name: 'Bollywood Hits 2026', q: 'New Bollywood Songs 2026 Nonstop', img: 'https://i.ytimg.com/vi/ApnaBanaLe/maxresdefault.jpg' },
-    { id: 'p2', name: 'Trending Now', q: 'Trending Hindi Songs 2025 Nonstop', img: 'https://i.ytimg.com/vi/Kesariya/maxresdefault.jpg' },
-    { id: 'p3', name: '90s Super Hits', q: '90s Superhit Bollywood Songs Jukebox', img: 'https://i.ytimg.com/vi/KumarSanu/maxresdefault.jpg' },
-    { id: 'p4', name: 'Lofi Vibes', q: 'Lofi Bollywood Songs Nonstop', img: 'https://i.ytimg.com/vi/LofiHindi/maxresdefault.jpg' }
+const playlists = [
+    { name: "Top Hindi 2026", q: "Latest Bollywood Songs 2026", img: "https://img.youtube.com/vi/ApnaBanaLe/0.jpg" },
+    { name: "Spotify Chill", q: "Hindi Lofi Mix", img: "https://img.youtube.com/vi/Kesariya/0.jpg" },
+    { name: "Indie Pop", q: "New Indian Indie Pop", img: "https://img.youtube.com/vi/KumarSanu/0.jpg" }
 ];
 
-async function loadHome() {
-    const row = document.getElementById('main-playlists');
-    row.innerHTML = "";
-    playlistsData.forEach(p => {
-        const d = document.createElement('div');
-        d.className = 'playlist-card';
-        d.innerHTML = `<img src="${p.img}"><h4>${p.name}</h4>`;
-        d.onclick = () => openPlaylist(p);
-        row.appendChild(d);
-    });
+function init() {
+    const grid = document.getElementById('home-grid');
+    grid.innerHTML = playlists.map(p => `
+        <div class="card" onclick="openPlaylist('${p.q}')">
+            <img src="${p.img}" onerror="this.src='https://via.placeholder.com/150'">
+            <h4>${p.name}</h4>
+        </div>
+    `).join('');
 }
 
-async function openPlaylist(p) {
-    document.getElementById('home-default').classList.add('hidden');
+async function openPlaylist(q) {
+    document.getElementById('home-grid').classList.add('hidden');
     document.getElementById('playlist-view').classList.remove('hidden');
-    document.getElementById('playlist-cover').src = p.img;
-    document.getElementById('playlist-name').innerText = p.name;
-    
-    // Fetch 50 songs for 5+ hours of play
-    const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=50&q=${p.q}&type=video&videoCategoryId=10&key=${API_KEY}`);
+    const listDiv = document.getElementById('song-list');
+    listDiv.innerHTML = "<p style='text-align:center; padding:20px; color:#9cd67d;'>Fetching songs...</p>";
+
+    const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&q=${q}&type=video&key=${API_KEY}`);
     const data = await res.json();
-    const songs = data.items;
+    currentList = data.items;
     
-    const listDiv = document.getElementById('playlist-songs-list');
-    listDiv.innerHTML = "";
-    songs.forEach((s, i) => {
-        const item = document.createElement('div');
-        item.className = 'song-item';
-        item.innerHTML = `
-            <img src="${s.snippet.thumbnails.default.url}">
-            <div class="song-item-info">
-                <h4>${s.snippet.title.substring(0,40)}...</h4>
-                <p>${s.snippet.channelTitle}</p>
+    listDiv.innerHTML = data.items.map((s, i) => `
+        <div style="display:flex; align-items:center; gap:15px; padding:12px 0; border-bottom:1px solid #111;" onclick="playSong(${i})">
+            <img src="${s.snippet.thumbnails.default.url}" style="width:50px; border-radius:5px;">
+            <div style="overflow:hidden;">
+                <h4 style="font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${s.snippet.title}</h4>
+                <p style="font-size:12px; color:#b3b3b3;">${s.snippet.channelTitle}</p>
             </div>
-        `;
-        item.onclick = () => playSong(i, songs);
-        listDiv.appendChild(item);
-    });
+        </div>
+    `).join('');
 }
 
-function playAll() {
-    const songItems = document.querySelectorAll('.song-item');
-    if(songItems.length > 0) songItems[0].click();
-}
-
-function backToHome() {
-    document.getElementById('home-default').classList.remove('hidden');
-    document.getElementById('playlist-view').classList.add('hidden');
-}
-
-// 2. Search & Play Logic
-async function instantSearch() {
+async function searchMusic() {
     const q = document.getElementById('search-input').value;
-    if (q.length < 2) return;
-    const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&q=${q}&type=video&videoCategoryId=10&key=${API_KEY}`);
-    const data = await res.json();
-    const list = document.getElementById('results-list');
-    list.innerHTML = "";
-    data.items.forEach((s, i) => {
-        const d = document.createElement('div');
-        d.className = 'playlist-card';
-        d.innerHTML = `<img src="${s.snippet.thumbnails.high.url}"><h4>${s.snippet.title.substring(0,25)}</h4>`;
-        d.onclick = () => playSong(i, data.items);
-        list.appendChild(d);
-    });
+    if(q.length < 2) return;
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(async () => {
+        const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${q}&type=video&key=${API_KEY}`);
+        const data = await res.json();
+        currentList = data.items;
+        document.getElementById('search-results').innerHTML = data.items.map((s, i) => `
+            <div class="card" onclick="playSong(${i})">
+                <img src="${s.snippet.thumbnails.medium.url}">
+                <h4>${s.snippet.title}</h4>
+            </div>
+        `).join('');
+    }, 600);
 }
 
-function playSong(idx, list) {
-    if(!list || !list[idx]) return;
-    currentPlaylist = list;
-    currentIndex = idx;
-    const s = currentPlaylist[idx];
+function playSong(i) {
+    currentIndex = i;
+    const s = currentList[i];
     player.loadVideoById(s.id.videoId);
-    
-    document.getElementById('title').innerText = s.snippet.title.substring(0,20);
-    document.getElementById('full-title').innerText = s.snippet.title;
-    document.getElementById('artist').innerText = s.snippet.channelTitle;
-    document.getElementById('full-artist').innerText = s.snippet.channelTitle;
-    document.getElementById('disk').style.backgroundImage = `url('${s.snippet.thumbnails.default.url}')`;
-    document.getElementById('large-disk').src = s.snippet.thumbnails.high.url;
+    document.getElementById('m-title').innerText = s.snippet.title;
+    document.getElementById('f-title').innerText = s.snippet.title;
+    document.getElementById('m-artist').innerText = s.snippet.channelTitle;
+    document.getElementById('f-artist').innerText = s.snippet.channelTitle;
+    document.getElementById('m-img').src = s.snippet.thumbnails.default.url;
+    document.getElementById('f-img').src = s.snippet.thumbnails.high.url;
 }
 
-// 3. Controls & Progress
-function togglePlay(e) {
-    if(e) e.stopPropagation();
-    const state = player.getPlayerState();
-    state === 1 ? player.pauseVideo() : player.playVideo();
-}
-
-function nextSong() { if(currentIndex < currentPlaylist.length - 1) playSong(currentIndex + 1, currentPlaylist); }
-function prevSong() { if(currentIndex > 0) playSong(currentIndex - 1, currentPlaylist); }
+function togglePlay(e) { if(e) e.stopPropagation(); player.getPlayerState() === 1 ? player.pauseVideo() : player.playVideo(); }
+function nextSong(e) { if(e) e.stopPropagation(); if(currentIndex < currentList.length-1) playSong(currentIndex+1); }
+function prevSong() { if(currentIndex > 0) playSong(currentIndex-1); }
 
 function onPlayerStateChange(e) {
-    const icon = e.data === 1 ? '<i class="fa-solid fa-pause"></i>' : '<i class="fa-solid fa-play"></i>';
-    document.getElementById('play-btn').innerHTML = icon;
-    document.getElementById('full-play-btn').innerHTML = icon;
-    if(e.data === 0) nextSong(); // Auto play next
-}
-
-function seek(e) {
-    const rect = document.getElementById('seek-bar').getBoundingClientRect();
-    const pos = (e.clientX - rect.left) / rect.width;
-    player.seekTo(pos * player.getDuration());
+    const icon = e.data === 1 ? 'fa-pause' : 'fa-play';
+    document.getElementById('m-play-icon').className = 'fa-solid ' + icon;
+    document.getElementById('f-play-icon').className = 'fa-solid ' + icon;
+    if(e.data === 0) nextSong();
 }
 
 function updateProgress() {
-    if (player && player.getDuration) {
-        const curr = player.getCurrentTime();
-        const dur = player.getDuration();
-        if (dur > 0) {
-            document.getElementById('progress-fill').style.width = (curr / dur * 100) + "%";
-            document.getElementById('current-time').innerText = formatTime(curr);
-            document.getElementById('total-duration').innerText = formatTime(dur);
-        }
+    if(player && player.getDuration) {
+        document.getElementById('progress-fill').style.width = (player.getCurrentTime() / player.getDuration() * 100) + "%";
     }
 }
 
-function formatTime(s) {
-    let m = Math.floor(s/60), sec = Math.floor(s%60);
-    return m + ":" + (sec < 10 ? '0' + sec : sec);
+function manualSeek(e) {
+    const rect = document.getElementById('seek-bar').getBoundingClientRect();
+    player.seekTo(((e.clientX - rect.left) / rect.width) * player.getDuration());
 }
 
-// 4. Offline & Storage
-function startDownload() {
-    const s = currentPlaylist[currentIndex];
-    let offline = JSON.parse(localStorage.getItem('offlineSongs')) || [];
-    if(!offline.find(x => x.id.videoId === s.id.videoId)) {
-        offline.push(s);
-        localStorage.setItem('offlineSongs', JSON.stringify(offline));
-        alert("Saved Offline!");
-    }
-    hideMenu();
-}
-
-function switchTab(id, btn) {
-    document.querySelectorAll('.content-area').forEach(s => s.classList.add('hidden'));
+function switchTab(id, el) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
     document.getElementById(id).classList.remove('hidden');
-    document.querySelectorAll('.nav-left button').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    if(id === 'library-section') loadLibrary();
-}
-
-function loadLibrary() {
-    const list = document.getElementById('library-list');
-    const offline = JSON.parse(localStorage.getItem('offlineSongs')) || [];
-    list.innerHTML = offline.length ? "" : "<h4>No saved songs yet</h4>";
-    offline.forEach((s, i) => {
-        const d = document.createElement('div');
-        d.className = 'playlist-card';
-        d.innerHTML = `<img src="${s.snippet.thumbnails.high.url}"><h4>${s.snippet.title}</h4>`;
-        d.onclick = () => playSong(i, offline);
-        list.appendChild(d);
-    });
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    el.classList.add('active');
 }
 
 function openFullPlayer() { document.getElementById('full-player').classList.add('active'); }
 function closeFullPlayer() { document.getElementById('full-player').classList.remove('active'); }
-function showMenu() { document.getElementById('options-menu').classList.add('show'); }
-function hideMenu() { document.getElementById('options-menu').classList.remove('show'); }
-
-loadHome();
+function closePlaylist() { document.getElementById('home-grid').classList.remove('hidden'); document.getElementById('playlist-view').classList.add('hidden'); }
