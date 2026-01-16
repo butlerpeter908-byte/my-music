@@ -1,43 +1,63 @@
 body {
-    background: #000000;
-    color: #ffffff;
-    font-family: Arial, sans-serif;
+    background-color: #121212;
+    color: white;
+    font-family: 'Segoe UI', sans-serif;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 100vh;
     margin: 0;
 }
-.player-container {
-    background: #111111;
-    padding: 40px;
-    border-radius: 30px;
-    text-align: center;
-    width: 280px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+
+.search-container {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
 }
-.disk {
-    width: 150px;
-    height: 150px;
-    background: linear-gradient(45deg, #ff416c, #ff4b2b);
-    border-radius: 50%;
-    margin: 0 auto 20px;
-    border: 5px solid #333;
-}
-.play-animation {
-    animation: rotate 3s linear infinite;
-}
-@keyframes rotate {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-button {
-    background: #ff4b2b;
+
+#search-input {
+    padding: 12px;
+    border-radius: 20px;
     border: none;
-    padding: 12px 35px;
+    width: 200px;
+    background: #282828;
     color: white;
-    border-radius: 25px;
-    font-size: 18px;
+}
+
+#search-btn {
+    background: #1DB954;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 50%;
     cursor: pointer;
+}
+
+.player-container {
+    background: linear-gradient(#282828, #121212);
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    width: 300px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+}
+
+.disk {
+    width: 180px;
+    height: 180px;
+    background: #333;
+    border-radius: 10px;
+    margin: 0 auto 20px;
+    background-image: url('https://p1.hiclipart.com/sticker-png/598/415/sticker-png-spotify-music-logo-podcast-playlist-art-digital-audio-thumbnail.png');
+    background-size: cover;
+}
+
+#play-btn {
+    background: #1DB954;
+    border: none;
+    padding: 15px 40px;
+    border-radius: 30px;
+    color: black;
     font-weight: bold;
+    cursor: pointer;
 }
