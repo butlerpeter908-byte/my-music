@@ -2,7 +2,6 @@ const API_KEY = 'AIzaSyBkricU1Xd041GGKd5BUXEXxfYU6fUzVzY';
 
 let player;
 
-// YouTube API load karna
 var tag = document.createElement('script');
 tag.src = "https://www.youtube.com/iframe_api";
 var firstScriptTag = document.getElementsByTagName('script')[0];
@@ -20,14 +19,14 @@ function onYouTubeIframeAPIReady() {
 
 const searchBtn = document.getElementById('search-btn');
 const playBtn = document.getElementById('play-btn');
+const disk = document.getElementById('disk');
 
-// Search Logic with Correct Backticks
 searchBtn.addEventListener('click', async () => {
     const query = document.getElementById('search-input').value;
     if(!query) return alert("Gaane ka naam likho!");
 
-    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${query}&type=video&key=${API_KEY}`;
-
+    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${encodeURIComponent(query)}&type=video&key=${API_KEY}`;
+    
     try {
         const res = await fetch(url);
         const data = await res.json();
@@ -35,19 +34,23 @@ searchBtn.addEventListener('click', async () => {
         if(data.items && data.items.length > 0) {
             const videoId = data.items[0].id.videoId;
             const title = data.items[0].snippet.title;
-            
+            const thumbnailUrl = data.items[0].snippet.thumbnails.high.url; // IMAGE URL
+
             document.getElementById('title').innerText = title;
+            
+            // DISK PAR IMAGE LAGANA
+            disk.style.backgroundImage = `url('${thumbnailUrl}')`;
+            
             player.loadVideoById(videoId);
             playBtn.innerText = 'PAUSE';
         } else {
             alert("Gaana nahi mila!");
         }
     } catch (err) {
-        alert("API Error! Quota ya Key check karein.");
+        alert("Error fetching data!");
     }
 });
 
-// Play/Pause Button toggle
 playBtn.addEventListener('click', () => {
     if (player.getPlayerState() === 1) {
         player.pauseVideo();
