@@ -3,109 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>OuterTune - Premium</title>
+    <title>OuterTune</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="app-container">
         <header>
-            <h1 id="tab-title">OuterTune</h1>
+            <h1>OuterTune</h1>
             <i class="fa-solid fa-circle-user" style="font-size: 24px; color: #9cd67d;"></i>
         </header>
 
         <main class="scroll-area">
             <section id="home-section" class="tab-content">
-                <div class="grid" id="home-grid">
-                    </div>
-
+                <div class="grid" id="home-grid"></div>
                 <div id="playlist-view" class="hidden">
-                    <div class="back-nav" onclick="closePlaylist()" style="padding: 10px 0; color: #9cd67d; cursor: pointer;">
-                        <i class="fa-solid fa-chevron-left"></i> <span style="margin-left: 10px; font-weight: bold;">Back</span>
+                    <div class="back-nav" onclick="closePlaylist()" style="padding: 15px; color: #9cd67d; cursor: pointer;">
+                        <i class="fa-solid fa-chevron-left"></i> Back
                     </div>
-                    <div id="song-list">
-                        </div>
+                    <div id="song-list"></div>
                 </div>
             </section>
 
             <section id="search-section" class="tab-content hidden">
-                <div class="search-box-ui" style="background: #1a1a1a; padding: 12px; border-radius: 10px; display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                <div class="search-box-ui" style="margin: 15px; background: #1a1a1a; padding: 12px; border-radius: 10px; display: flex; align-items: center; gap: 10px;">
                     <i class="fa-solid fa-magnifying-glass" style="color: #9cd67d;"></i>
-                    <input type="text" id="search-input" placeholder="Search songs..." oninput="searchMusic()" style="background: none; border: none; color: #fff; outline: none; width: 100%; font-size: 16px;">
+                    <input type="text" id="search-input" placeholder="Search original songs..." oninput="searchMusic()" style="background: none; border: none; color: #fff; outline: none; width: 100%;">
                 </div>
                 <div id="search-results"></div>
             </section>
 
             <section id="library-section" class="tab-content hidden">
-                <h3 style="margin-bottom: 20px;">Your Library</h3>
-                
-                <div class="folder-item" onclick="showFavorites()" style="cursor: pointer; display: flex; align-items: center; gap: 15px; background: #121212; padding: 15px; border-radius: 12px; margin-bottom: 10px;">
-                    <div class="folder-icon" style="color: #9cd67d; font-size: 20px;"><i class="fa-solid fa-heart"></i></div>
-                    <div class="folder-info">
-                        <h4>Favorites</h4>
-                        <p id="fav-count" style="font-size: 12px; color: #b3b3b3;">0 songs</p>
-                    </div>
+                <div class="folder-item" onclick="showFavorites()" style="padding: 20px; border-bottom: 1px solid #222;">
+                    <i class="fa-solid fa-heart" style="color: #9cd67d;"></i> Favorites (<span id="fav-count">0</span>)
                 </div>
-
-                <div class="folder-item" onclick="showDownloads()" style="cursor: pointer; display: flex; align-items: center; gap: 15px; background: #121212; padding: 15px; border-radius: 12px;">
-                    <div class="folder-icon" style="color: #9cd67d; font-size: 20px;"><i class="fa-solid fa-circle-down"></i></div>
-                    <div class="folder-info">
-                        <h4>Downloads</h4>
-                        <p id="dl-count" style="font-size: 12px; color: #b3b3b3;">0 songs</p>
-                    </div>
+                <div class="folder-item" onclick="showDownloads()" style="padding: 20px; border-bottom: 1px solid #222;">
+                    <i class="fa-solid fa-circle-down" style="color: #9cd67d;"></i> Downloads (<span id="dl-count">0</span>)
                 </div>
             </section>
         </main>
 
         <div class="mini-player" onclick="openFullPlayer()">
             <div id="yt-player-container" style="display:none"></div>
-            <img id="m-img" src="https://via.placeholder.com/50/1a1a1a/fff?text=OT">
+            <img id="m-img" src="https://via.placeholder.com/50">
             <div class="mini-meta">
                 <h4 id="m-title">Not Playing</h4>
                 <div id="m-time">0:00 / 0:00</div>
             </div>
-            <div class="mini-controls">
-                <i class="fa-solid fa-play" id="m-play-icon" onclick="togglePlay(event)"></i>
-            </div>
-            <div class="mini-seekbar" id="mini-seekbar-bar" onclick="manualSeek(event, 'mini-seekbar-bar'); event.stopPropagation();" style="position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: #333;">
+            <div class="mini-controls"><i class="fa-solid fa-play" id="m-play-icon" onclick="togglePlay(event)"></i></div>
+            <div class="mini-seekbar" id="m-seek" onclick="manualSeek(event, 'm-seek'); event.stopPropagation();" style="position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: #333;">
                 <div id="mini-progress" style="height: 100%; background: #9cd67d; width: 0%;"></div>
             </div>
         </div>
 
         <nav class="bottom-nav">
-            <div class="nav-item active" onclick="switchTab('home-section', this)">
-                <i class="fa-solid fa-house"></i><span>Home</span>
-            </div>
-            <div class="nav-item" onclick="switchTab('search-section', this)">
-                <i class="fa-solid fa-magnifying-glass"></i><span>Search</span>
-            </div>
-            <div class="nav-item" onclick="switchTab('library-section', this)">
-                <i class="fa-solid fa-lines-leaning"></i><span>Library</span>
-            </div>
+            <div class="nav-item active" onclick="switchTab('home-section', this)"><i class="fa-solid fa-house"></i><span>Home</span></div>
+            <div class="nav-item" onclick="switchTab('search-section', this)"><i class="fa-solid fa-magnifying-glass"></i><span>Search</span></div>
+            <div class="nav-item" onclick="switchTab('library-section', this)"><i class="fa-solid fa-lines-leaning"></i><span>Library</span></div>
         </nav>
 
         <div id="full-player" class="full-player">
-            <i class="fa-solid fa-chevron-down" onclick="closeFullPlayer()" style="font-size: 24px; margin-bottom: 20px;"></i>
+            <i class="fa-solid fa-chevron-down" onclick="closeFullPlayer()"></i>
             <img id="f-img" class="full-art" src="">
-            <div style="width: 100%; margin: 20px 0;">
-                <h2 id="f-title" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Song Title</h2>
-                <p id="f-artist" style="color: #b3b3b3;">Artist</p>
+            <h2 id="f-title">Song Title</h2>
+            <div class="progress-container" id="f-seek" onclick="manualSeek(event, 'f-seek')" style="width: 100%; height: 5px; background: #333; margin: 20px 0;">
+                <div id="progress-fill" style="height: 100%; background: #9cd67d; width: 0%;"></div>
             </div>
-            
-            <div class="progress-container" id="full-seekbar-bar" onclick="manualSeek(event, 'full-seekbar-bar')" style="width: 100%; height: 6px; background: #333; border-radius: 3px; margin: 20px 0;">
-                <div id="progress-fill" style="height: 100%; background: #9cd67d; border-radius: 3px; width: 0%;"></div>
-            </div>
-
-            <div class="full-controls" style="width: 100%; display: flex; justify-content: space-around; align-items: center;">
-                <i class="fa-solid fa-backward-step" onclick="prevSong()" style="font-size: 30px;"></i>
-                <div class="play-btn-big" onclick="togglePlay()" style="width: 70px; height: 70px; background: #fff; color: #000; border-radius: 50%; display: flex; justify-content: center; align-items: center;">
-                    <i class="fa-solid fa-play" id="f-play-icon" style="font-size: 30px;"></i>
-                </div>
-                <i class="fa-solid fa-forward-step" onclick="nextSong()" style="font-size: 30px;"></i>
+            <div class="full-controls">
+                <i class="fa-solid fa-backward-step" onclick="prevSong()"></i>
+                <div class="play-btn-big" onclick="togglePlay()"><i class="fa-solid fa-play" id="f-play-icon"></i></div>
+                <i class="fa-solid fa-forward-step" onclick="nextSong()"></i>
             </div>
         </div>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
