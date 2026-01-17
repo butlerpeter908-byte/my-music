@@ -18,12 +18,12 @@ function onYouTubeIframeAPIReady() {
 }
 
 const playlists = [
-    { name: "Trending", q: "Latest Bollywood Hits", img: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300" },
-    { name: "Lofi Mix", q: "Hindi Lofi Songs", img: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=300" },
-    { name: "Old is Gold", q: "Classic Kishore Lata Hits", img: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300" },
-    { name: "Bollywood 90s", q: "90s Bollywood Romantic", img: "https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=300" },
-    { name: "Monsoon", q: "Bollywood Rain Songs", img: "https://images.pexels.com/photos/110874/pexels-photo-110874.jpeg?auto=compress&cs=tinysrgb&w=300" },
-    { name: "Summer", q: "Bollywood Summer Party Hits", img: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300" }
+    { name: "Trending", q: "Official Music Video Hits 2026", img: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300" },
+    { name: "Lofi Mix", q: "Hindi Lofi Songs Official", img: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=300" },
+    { name: "Old is Gold", q: "Classic Kishore Lata Hits Original", img: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300" },
+    { name: "Bollywood 90s", q: "90s Bollywood Romantic Official", img: "https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=300" },
+    { name: "Monsoon", q: "Bollywood Rain Songs Official", img: "https://images.pexels.com/photos/110874/pexels-photo-110874.jpeg?auto=compress&cs=tinysrgb&w=300" },
+    { name: "Summer", q: "Bollywood Summer Party Hits Official", img: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300" }
 ];
 
 function init() {
@@ -40,8 +40,8 @@ async function searchMusic() {
     if(q.length < 3) return;
     clearTimeout(searchTimer);
     searchTimer = setTimeout(async () => {
-        // videoDuration: 'medium' filters between 4 and 20 mins, but we show results and play
-        const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${encodeURIComponent(q)}&type=video&videoDuration=medium&key=${API_KEY}`);
+        // "Official Video" and "-remix" added to avoid remixes
+        const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${encodeURIComponent(q + " Official Video -remix -lofi")}&type=video&videoDuration=medium&key=${API_KEY}`);
         const data = await res.json();
         currentList = data.items;
         renderSongList(currentList, 'search-results');
@@ -51,7 +51,7 @@ async function searchMusic() {
 async function openPlaylist(q) {
     document.getElementById('home-grid').classList.add('hidden');
     document.getElementById('playlist-view').classList.remove('hidden');
-    const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=${encodeURIComponent(q)}&type=video&videoDuration=medium&key=${API_KEY}`);
+    const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=${encodeURIComponent(q + " -remix")}&type=video&videoDuration=medium&key=${API_KEY}`);
     const data = await res.json();
     currentList = data.items;
     renderSongList(currentList, 'song-list');
@@ -59,6 +59,7 @@ async function openPlaylist(q) {
 
 function renderSongList(list, targetId) {
     const container = document.getElementById(targetId) || document.getElementById('song-list');
+    if(!container) return;
     container.innerHTML = list.map((s, i) => {
         const vId = s.id.videoId || s.id;
         const isFav = favorites.find(f => f.id === vId) ? 'active' : '';
@@ -98,16 +99,18 @@ function toggleDownload(idx) {
 }
 
 function showFavorites() {
-    currentList = favorites;
+    switchTab('home-section', document.querySelectorAll('.nav-item')[0]); // Tab switch simulation
     document.getElementById('home-grid').classList.add('hidden');
     document.getElementById('playlist-view').classList.remove('hidden');
+    currentList = favorites;
     renderSongList(currentList, 'song-list');
 }
 
 function showDownloads() {
-    currentList = downloads;
+    switchTab('home-section', document.querySelectorAll('.nav-item')[0]);
     document.getElementById('home-grid').classList.add('hidden');
     document.getElementById('playlist-view').classList.remove('hidden');
+    currentList = downloads;
     renderSongList(currentList, 'song-list');
 }
 
@@ -164,8 +167,8 @@ function switchTab(id, el) {
     document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
     document.getElementById(id).classList.remove('hidden');
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    el.classList.add('active');
-    closePlaylist();
+    if(el) el.classList.add('active');
+    if(id !== 'home-section') closePlaylist();
 }
 function openFullPlayer() { document.getElementById('full-player').classList.add('active'); }
 function closeFullPlayer() { document.getElementById('full-player').classList.remove('active'); }
