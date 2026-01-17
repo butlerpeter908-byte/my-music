@@ -20,8 +20,8 @@ function onYouTubeIframeAPIReady() {
 const playlists = [
     { name: "Trending", q: "Latest Hindi Songs 2025", img: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300" },
     { name: "Lofi Mix", q: "Hindi Lofi Chill", img: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=300" },
-    { name: "Old is Gold", q: "Classic Kishore Lata Hits", img: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300" },
-    { name: "90s Bollywood", q: "90s Romantic Bollywood Hits", img: "https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=300" },
+    { name: "Old is Gold", q: "Kishore Kumar Hits", img: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300" },
+    { name: "Bollywood 90s", q: "90s Romantic Hits", img: "https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=300" },
     { name: "Monsoon", q: "Bollywood Rain Songs", img: "https://images.pexels.com/photos/110874/pexels-photo-110874.jpeg?auto=compress&cs=tinysrgb&w=300" },
     { name: "Party Hits", q: "Bollywood Party Songs", img: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300" }
 ];
@@ -40,11 +40,10 @@ async function searchMusic() {
     if(q.length < 2) return;
     clearTimeout(searchTimer);
     searchTimer = setTimeout(async () => {
-        // Filter hataya taaki saare songs dikhein
-        const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&q=${encodeURIComponent(q)}&type=video&key=${API_KEY}`);
+        const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&q=${encodeURIComponent(q + " song")}&type=video&key=${API_KEY}`);
         const data = await res.json();
         if(data.items) {
-            currentList = data.items;
+            currentList = data.items; // Nayi list update karega
             renderSongList(currentList, 'search-results');
         }
     }, 500);
@@ -53,10 +52,12 @@ async function searchMusic() {
 async function openPlaylist(q) {
     document.getElementById('home-grid').classList.add('hidden');
     document.getElementById('playlist-view').classList.remove('hidden');
+    document.getElementById('song-list').innerHTML = "<p style='padding:20px;'>Loading online songs...</p>";
+    
     const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=30&q=${encodeURIComponent(q)}&type=video&key=${API_KEY}`);
     const data = await res.json();
     if(data.items) {
-        currentList = data.items;
+        currentList = data.items; // Online list update
         renderSongList(currentList, 'song-list');
     }
 }
@@ -90,7 +91,9 @@ function toggleFav(idx) {
     else favorites.push({id: vId, snippet: s.snippet});
     localStorage.setItem('favs', JSON.stringify(favorites));
     updateLibUI();
-    renderSongList(currentList, '');
+    // Isse dil ka rang turant badlega
+    const icons = document.querySelectorAll('.fav-btn');
+    if(icons[idx]) icons[idx].classList.toggle('active');
 }
 
 function toggleDownload(idx) {
@@ -101,22 +104,21 @@ function toggleDownload(idx) {
     else downloads.push({id: vId, snippet: s.snippet});
     localStorage.setItem('dls', JSON.stringify(downloads));
     updateLibUI();
-    renderSongList(currentList, '');
+    const icons = document.querySelectorAll('.dl-btn');
+    if(icons[idx]) icons[idx].classList.toggle('active');
 }
 
 function showFavorites() {
-    if(favorites.length === 0) { alert("No favorites yet!"); return; }
-    currentList = favorites;
-    document.getElementById('tab-title').innerText = "Favorites";
+    if(favorites.length === 0) { alert("Favorites empty!"); return; }
+    currentList = [...favorites]; // Local copy
     document.getElementById('home-grid').classList.add('hidden');
     document.getElementById('playlist-view').classList.remove('hidden');
     renderSongList(currentList, 'song-list');
 }
 
 function showDownloads() {
-    if(downloads.length === 0) { alert("No downloads yet!"); return; }
-    currentList = downloads;
-    document.getElementById('tab-title').innerText = "Downloads";
+    if(downloads.length === 0) { alert("Downloads empty!"); return; }
+    currentList = [...downloads];
     document.getElementById('home-grid').classList.add('hidden');
     document.getElementById('playlist-view').classList.remove('hidden');
     renderSongList(currentList, 'song-list');
@@ -178,7 +180,6 @@ function switchTab(id, el) {
     document.getElementById(id).classList.remove('hidden');
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     el.classList.add('active');
-    document.getElementById('tab-title').innerText = el.innerText;
     closePlaylist();
 }
 
