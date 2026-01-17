@@ -1,39 +1,44 @@
-:root { --bg: #000; --primary: #9cd67d; --surface: #121212; }
+:root { --bg: #000; --primary: #9cd67d; --surface: #121212; --dim: #b3b3b3; }
 * { margin:0; padding:0; box-sizing: border-box; font-family: sans-serif; }
 body { background: var(--bg); color: #fff; overflow: hidden; height: 100vh; }
 
-.scroll-area { height: calc(100vh - 160px); overflow-y: auto; padding: 20px; }
+header { padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+.scroll-area { height: calc(100vh - 160px); overflow-y: auto; padding: 0 15px; }
 .hidden { display: none !important; }
 
-/* Category Grid */
-.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.banner-box { position: relative; height: 90px; border-radius: 10px; overflow: hidden; border: 1px solid #222; margin-bottom: 5px; }
+/* Grid Compact */
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.banner-box { position: relative; height: 85px; border-radius: 12px; overflow: hidden; border: 1px solid #222; }
 .banner-box img { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; }
-.banner-box span { position: absolute; bottom: 8px; left: 10px; font-weight: bold; font-size: 14px; }
+.banner-box span { position: absolute; bottom: 8px; left: 10px; font-weight: bold; font-size: 13px; }
 
 /* List Style */
-.list-item, .search-card { display: flex; gap: 12px; padding: 10px; align-items: center; border-bottom: 1px solid #111; }
-.list-item img, .search-card img { width: 50px; height: 50px; border-radius: 6px; }
-.info h4 { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+.list-item, .search-card { display: flex; gap: 12px; padding: 10px 0; align-items: center; border-bottom: 1px solid #111; }
+.list-item img, .search-card img { width: 45px; height: 45px; border-radius: 6px; }
+.info h4 { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
 
-/* Mini Player with Seekbar */
-.mini-player { 
-    position: fixed; bottom: 85px; left: 10px; right: 10px; 
-    background: #1a1a1a; height: 65px; border-radius: 12px; 
-    display: flex; align-items: center; padding: 0 10px; z-index: 100; overflow: hidden;
-}
-/* This is the mini seekbar */
+/* Library Folders */
+.folder-item { display: flex; align-items: center; gap: 15px; background: var(--surface); padding: 15px; border-radius: 12px; margin-bottom: 10px; }
+.folder-icon { width: 45px; height: 45px; background: #222; display: flex; align-items: center; justify-content: center; border-radius: 8px; color: var(--primary); font-size: 18px; }
+
+/* Player UI */
+.mini-player { position: fixed; bottom: 85px; left: 10px; right: 10px; background: #1a1a1a; height: 65px; border-radius: 12px; display: flex; align-items: center; padding: 0 12px; z-index: 100; overflow: hidden; }
 .mini-seekbar { position: absolute; bottom: 0; left: 0; height: 3px; background: #333; width: 100%; }
-#mini-progress { height: 100%; background: var(--primary); width: 0%; transition: 0.3s; }
-
-.mini-player img { width: 45px; height: 45px; border-radius: 6px; margin-right: 12px; }
+#mini-progress { height: 100%; background: var(--primary); width: 0%; }
 .mini-meta { flex: 1; overflow: hidden; }
+#m-time { font-size: 10px; color: var(--primary); margin-top: 2px; }
 
 .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 75px; background: #000; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #111; }
+.nav-item { color: #555; text-align: center; font-size: 10px; }
+.nav-item i { display: block; font-size: 20px; margin-bottom: 4px; }
 .nav-item.active { color: var(--primary); }
 
-.full-player { position: fixed; top: 100%; left: 0; width: 100%; height: 100%; background: #000; transition: 0.4s; padding: 50px 20px; z-index: 200; display: flex; flex-direction: column; align-items: center; }
+.full-player { position: fixed; top: 100%; left: 0; width: 100%; height: 100%; background: #000; transition: 0.4s; padding: 40px 25px; z-index: 200; display: flex; flex-direction: column; align-items: center; }
 .full-player.active { top: 0; }
-.full-art { width: 85%; aspect-ratio: 1/1; border-radius: 20px; margin: 30px 0; }
-.progress-bg { width: 100%; height: 4px; background: #333; border-radius: 2px; margin: 20px 0; }
+.full-art { width: 100%; aspect-ratio: 1/1; border-radius: 15px; margin: 30px 0; }
+.progress-container { width: 100%; height: 4px; background: #333; border-radius: 2px; margin: 20px 0; }
 #progress-fill { height: 100%; background: var(--primary); width: 0%; }
+.full-controls { width: 100%; display: flex; justify-content: space-around; align-items: center; }
+.play-btn-big { width: 65px; height: 65px; background: #fff; color: #000; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; }
+.search-box { background: #1a1a1a; padding: 10px; border-radius: 8px; display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+.search-box input { background: none; border: none; color: #fff; outline: none; width: 100%; }
