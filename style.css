@@ -1,163 +1,65 @@
 :root {
     --bg: #000000;
     --surface: #121212;
-    --primary: #9cd67d; /* OuterTune Green */
+    --primary: #9cd67d;
     --text: #ffffff;
     --dim: #b3b3b3;
-    --card-bg: #1a1a1a;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+body { background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; }
 
-body { 
-    background-color: var(--bg) !important; 
-    color: var(--text); 
-    overflow: hidden; 
-    height: 100vh; 
-    width: 100vw; 
-}
+/* Header Fix */
+header { padding: 25px 20px; display: flex; justify-content: space-between; align-items: center; }
+header h1 { font-size: 28px; font-weight: 800; letter-spacing: -1px; }
 
-/* App Container */
-.app-container { 
-    height: 100%; 
-    display: flex; 
-    flex-direction: column; 
-    background: var(--bg);
-}
-
-header { 
-    padding: 20px; 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    background: var(--bg);
-}
-
-header h1 { font-size: 26px; font-weight: 800; }
-
-/* Scrollable Content */
-.scroll-area { 
-    flex: 1; 
-    overflow-y: auto; 
-    padding: 0 16px 180px; 
-}
-
+/* Content Area */
+.scroll-area { height: calc(100vh - 160px); overflow-y: auto; padding: 0 20px; }
 .hidden { display: none !important; }
 
-/* Spotify Style Grid */
-.grid { 
-    display: grid; 
-    grid-template-columns: 1fr 1fr; 
-    gap: 16px; 
-    margin-top: 15px; 
-}
+/* Round Thumbnails (OuterTune Style) */
+.grid { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 20px; scrollbar-width: none; }
+.grid::-webkit-scrollbar { display: none; }
 
-.card { 
-    background: var(--card-bg); 
-    padding: 12px; 
-    border-radius: 12px; 
-    transition: transform 0.2s;
-}
-
+.card { min-width: 120px; text-align: center; }
 .card img { 
-    width: 100%; 
-    aspect-ratio: 1/1; 
-    border-radius: 8px; 
+    width: 110px; height: 110px; 
+    border-radius: 50%; /* Pure Round */
     object-fit: cover; 
+    border: 2px solid #222;
     margin-bottom: 10px;
 }
+.card h4 { font-size: 13px; font-weight: 500; color: var(--dim); }
 
-.card h4 { 
-    font-size: 14px; 
-    white-space: nowrap; 
-    overflow: hidden; 
-    text-overflow: ellipsis; 
-}
-
-/* Mini Player (Floating) */
+/* Floating Mini Player */
 .mini-player {
-    position: fixed; 
-    bottom: 85px; 
-    left: 10px; 
-    right: 10px;
-    background: rgba(26, 26, 26, 0.98); 
-    backdrop-filter: blur(15px);
-    height: 64px; 
-    border-radius: 12px; 
-    display: flex; 
-    align-items: center; 
-    padding: 0 12px; 
-    z-index: 99;
-    border: 1px solid #333;
+    position: fixed; bottom: 90px; left: 15px; right: 15px;
+    background: #1c1c1c; height: 64px; border-radius: 16px;
+    display: flex; align-items: center; padding: 0 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5); z-index: 100;
 }
-
-.mini-player img { width: 44px; height: 44px; border-radius: 6px; margin-right: 12px; }
+.mini-player img { width: 44px; height: 44px; border-radius: 8px; margin-right: 12px; }
 .mini-meta { flex: 1; overflow: hidden; }
 .mini-meta h4 { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mini-meta p { font-size: 12px; color: var(--dim); }
+.mini-controls { display: flex; gap: 15px; color: var(--primary); font-size: 20px; }
 
-.mini-controls i { font-size: 22px; color: #fff; margin-left: 15px; }
-
-/* Bottom Navigation */
+/* Bottom Nav Fix */
 .bottom-nav {
-    position: fixed; 
-    bottom: 0; 
-    width: 100%; 
-    height: 75px;
-    background: #000; 
-    display: flex; 
-    justify-content: space-around; 
-    align-items: center;
-    border-top: 1px solid #1a1a1a; 
-    z-index: 100;
+    position: fixed; bottom: 0; width: 100%; height: 80px;
+    background: rgba(0,0,0,0.8); backdrop-filter: blur(20px);
+    display: flex; justify-content: space-around; align-items: center;
+    border-top: 1px solid #111;
 }
-
-.nav-item { color: var(--dim); text-align: center; font-size: 11px; flex: 1; }
-.nav-item i { display: block; font-size: 22px; margin-bottom: 5px; }
+.nav-item { color: #555; text-align: center; font-size: 11px; transition: 0.3s; }
+.nav-item i { display: block; font-size: 24px; margin-bottom: 4px; }
 .nav-item.active { color: var(--primary); }
 
-/* Full Screen Player */
+/* Full Player Overlay */
 .full-player {
-    position: fixed; 
-    top: 100%; 
-    left: 0; 
-    width: 100%; 
-    height: 100%;
-    background: linear-gradient(to bottom, #1a1a1a, #000); 
-    z-index: 200; 
-    transition: transform 0.4s cubic-bezier(0.3, 0, 0.2, 1);
-    padding: 50px 25px; 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center;
+    position: fixed; top: 100%; left: 0; width: 100%; height: 100%;
+    background: #000; z-index: 200; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 60px 30px; display: flex; flex-direction: column; align-items: center;
 }
-
-.full-player.active { transform: translateY(-100%); }
-
-.full-art-container { width: 100%; aspect-ratio: 1/1; margin: 40px 0; }
-.full-art { width: 100%; height: 100%; border-radius: 15px; object-fit: cover; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-
-.full-player h2 { font-size: 22px; text-align: center; margin-bottom: 5px; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.full-player p { color: var(--dim); margin-bottom: 30px; }
-
-/* Progress Bar */
-.progress-container { width: 100%; margin-bottom: 40px; }
-.progress-bg { width: 100%; height: 4px; background: #333; border-radius: 2px; }
-#progress-fill { width: 0%; height: 100%; background: var(--primary); border-radius: 2px; }
-
-.full-controls { width: 100%; display: flex; justify-content: space-around; align-items: center; }
-.play-btn-big { 
-    width: 72px; 
-    height: 72px; 
-    background: #fff; 
-    color: #000; 
-    border-radius: 50%; 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    font-size: 28px; 
-}
-
-/* Back Button & List Style */
-.back-nav { padding: 15px 0; color: var(--primary); display: flex; align-items: center; gap: 10px; cursor: pointer; }
-#song-list div:active { background: #222; }
+.full-player.active { top: 0; }
+.full-art { width: 100%; aspect-ratio: 1/1; border-radius: 24px; object-fit: cover; margin: 40px 0; }
