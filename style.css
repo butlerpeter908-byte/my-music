@@ -8,37 +8,38 @@ header { padding: 20px; display: flex; justify-content: space-between; align-ite
 
 /* Grid Compact */
 .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.banner-box { position: relative; height: 85px; border-radius: 12px; overflow: hidden; border: 1px solid #222; }
+.banner-box { position: relative; height: 85px; border-radius: 12px; overflow: hidden; border: 1px solid #222; cursor: pointer; }
 .banner-box img { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; }
 .banner-box span { position: absolute; bottom: 8px; left: 10px; font-weight: bold; font-size: 13px; }
 
-/* List Style */
-.list-item, .search-card { display: flex; gap: 12px; padding: 10px 0; align-items: center; border-bottom: 1px solid #111; }
+/* Song List Items with Icons */
+.list-item, .search-card { display: flex; gap: 12px; padding: 10px 0; align-items: center; border-bottom: 1px solid #111; position: relative; }
 .list-item img, .search-card img { width: 45px; height: 45px; border-radius: 6px; }
-.info h4 { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
+.info { flex: 1; overflow: hidden; }
+.info h4 { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; }
+.action-icons { display: flex; gap: 15px; color: #555; font-size: 16px; margin-right: 5px; }
+.action-icons .fav-btn.active { color: #ff4d4d; }
 
 /* Library Folders */
-.folder-item { display: flex; align-items: center; gap: 15px; background: var(--surface); padding: 15px; border-radius: 12px; margin-bottom: 10px; }
+.folder-item { display: flex; align-items: center; gap: 15px; background: var(--surface); padding: 15px; border-radius: 12px; margin-bottom: 10px; cursor: pointer; }
 .folder-icon { width: 45px; height: 45px; background: #222; display: flex; align-items: center; justify-content: center; border-radius: 8px; color: var(--primary); font-size: 18px; }
 
 /* Player UI */
-.mini-player { position: fixed; bottom: 85px; left: 10px; right: 10px; background: #1a1a1a; height: 65px; border-radius: 12px; display: flex; align-items: center; padding: 0 12px; z-index: 100; overflow: hidden; }
-.mini-seekbar { position: absolute; bottom: 0; left: 0; height: 3px; background: #333; width: 100%; }
-#mini-progress { height: 100%; background: var(--primary); width: 0%; }
+.mini-player { position: fixed; bottom: 85px; left: 10px; right: 10px; background: #1a1a1a; height: 65px; border-radius: 12px; display: flex; align-items: center; padding: 0 12px; z-index: 100; overflow: hidden; cursor: pointer; }
+.mini-seekbar { position: absolute; bottom: 0; left: 0; height: 5px; background: #333; width: 100%; cursor: pointer; }
+#mini-progress { height: 100%; background: var(--primary); width: 0%; pointer-events: none; }
 .mini-meta { flex: 1; overflow: hidden; }
 #m-time { font-size: 10px; color: var(--primary); margin-top: 2px; }
 
-.bottom-nav { position: fixed; bottom: 0; width: 100%; height: 75px; background: #000; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #111; }
-.nav-item { color: #555; text-align: center; font-size: 10px; }
+.bottom-nav { position: fixed; bottom: 0; width: 100%; height: 75px; background: #000; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #111; z-index: 100; }
+.nav-item { color: #555; text-align: center; font-size: 10px; cursor: pointer; }
 .nav-item i { display: block; font-size: 20px; margin-bottom: 4px; }
 .nav-item.active { color: var(--primary); }
 
 .full-player { position: fixed; top: 100%; left: 0; width: 100%; height: 100%; background: #000; transition: 0.4s; padding: 40px 25px; z-index: 200; display: flex; flex-direction: column; align-items: center; }
 .full-player.active { top: 0; }
-.full-art { width: 100%; aspect-ratio: 1/1; border-radius: 15px; margin: 30px 0; }
-.progress-container { width: 100%; height: 4px; background: #333; border-radius: 2px; margin: 20px 0; }
-#progress-fill { height: 100%; background: var(--primary); width: 0%; }
+.full-art { width: 100%; aspect-ratio: 1/1; border-radius: 15px; margin: 30px 0; object-fit: cover; }
+.progress-container { width: 100%; height: 4px; background: #333; border-radius: 2px; margin: 20px 0; cursor: pointer; }
+#progress-fill { height: 100%; background: var(--primary); width: 0%; pointer-events: none; }
 .full-controls { width: 100%; display: flex; justify-content: space-around; align-items: center; }
 .play-btn-big { width: 65px; height: 65px; background: #fff; color: #000; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; }
-.search-box { background: #1a1a1a; padding: 10px; border-radius: 8px; display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
-.search-box input { background: none; border: none; color: #fff; outline: none; width: 100%; }
