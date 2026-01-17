@@ -1,65 +1,50 @@
-:root {
-    --bg: #000000;
-    --surface: #121212;
-    --primary: #9cd67d;
-    --text: #ffffff;
-    --dim: #b3b3b3;
-}
+:root { --bg: #000; --primary: #9cd67d; --surface: #121212; }
+* { margin:0; padding:0; box-sizing: border-box; font-family: sans-serif; }
+body { background: var(--bg); color: #fff; overflow: hidden; height: 100vh; }
 
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-body { background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; }
-
-/* Header Fix */
-header { padding: 25px 20px; display: flex; justify-content: space-between; align-items: center; }
-header h1 { font-size: 28px; font-weight: 800; letter-spacing: -1px; }
-
-/* Content Area */
-.scroll-area { height: calc(100vh - 160px); overflow-y: auto; padding: 0 20px; }
+.scroll-area { height: calc(100vh - 160px); overflow-y: auto; padding: 20px; }
 .hidden { display: none !important; }
 
-/* Round Thumbnails (OuterTune Style) */
-.grid { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 20px; scrollbar-width: none; }
-.grid::-webkit-scrollbar { display: none; }
-
-.card { min-width: 120px; text-align: center; }
-.card img { 
-    width: 110px; height: 110px; 
-    border-radius: 50%; /* Pure Round */
-    object-fit: cover; 
-    border: 2px solid #222;
-    margin-bottom: 10px;
+/* Banner Grid Style */
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.banner-box { 
+    position: relative; 
+    height: 100px; 
+    border-radius: 12px; 
+    overflow: hidden; 
+    border: 1px solid #222;
 }
-.card h4 { font-size: 13px; font-weight: 500; color: var(--dim); }
-
-/* Floating Mini Player */
-.mini-player {
-    position: fixed; bottom: 90px; left: 15px; right: 15px;
-    background: #1c1c1c; height: 64px; border-radius: 16px;
-    display: flex; align-items: center; padding: 0 12px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.5); z-index: 100;
+.banner-box img { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; }
+.banner-box span { 
+    position: absolute; bottom: 10px; left: 10px; 
+    font-weight: bold; font-size: 16px; color: #fff; 
 }
-.mini-player img { width: 44px; height: 44px; border-radius: 8px; margin-right: 12px; }
+
+/* Search List UI */
+#search-results { display: flex; flex-direction: column; gap: 10px; }
+.search-card { 
+    display: flex; gap: 15px; background: var(--surface); 
+    padding: 10px; border-radius: 10px; align-items: center;
+}
+.search-card img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
+.search-card h4 { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Player UI */
+.mini-player { 
+    position: fixed; bottom: 85px; left: 10px; right: 10px; 
+    background: #1a1a1a; height: 65px; border-radius: 12px; 
+    display: flex; align-items: center; padding: 0 10px; z-index: 100;
+}
+.mini-player img { width: 45px; height: 45px; border-radius: 6px; margin-right: 12px; }
 .mini-meta { flex: 1; overflow: hidden; }
-.mini-meta h4 { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.mini-meta p { font-size: 12px; color: var(--dim); }
-.mini-controls { display: flex; gap: 15px; color: var(--primary); font-size: 20px; }
 
-/* Bottom Nav Fix */
-.bottom-nav {
-    position: fixed; bottom: 0; width: 100%; height: 80px;
-    background: rgba(0,0,0,0.8); backdrop-filter: blur(20px);
-    display: flex; justify-content: space-around; align-items: center;
-    border-top: 1px solid #111;
+.bottom-nav { 
+    position: fixed; bottom: 0; width: 100%; height: 75px; 
+    background: #000; display: flex; justify-content: space-around; 
+    align-items: center; border-top: 1px solid #111; 
 }
-.nav-item { color: #555; text-align: center; font-size: 11px; transition: 0.3s; }
-.nav-item i { display: block; font-size: 24px; margin-bottom: 4px; }
 .nav-item.active { color: var(--primary); }
 
-/* Full Player Overlay */
-.full-player {
-    position: fixed; top: 100%; left: 0; width: 100%; height: 100%;
-    background: #000; z-index: 200; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    padding: 60px 30px; display: flex; flex-direction: column; align-items: center;
-}
+.full-player { position: fixed; top: 100%; left: 0; width: 100%; height: 100%; background: #000; transition: 0.4s; padding: 50px 20px; z-index: 200; display: flex; flex-direction: column; align-items: center; }
 .full-player.active { top: 0; }
-.full-art { width: 100%; aspect-ratio: 1/1; border-radius: 24px; object-fit: cover; margin: 40px 0; }
+.full-art { width: 85%; aspect-ratio: 1/1; border-radius: 20px; margin: 30px 0; }
