@@ -3,123 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>OuterTune - Spotify Edition</title>
+    <title>OuterTune</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-
     <div class="app-container">
         <header>
             <h1 id="tab-title">Home</h1>
-            <div class="header-icons">
-                <i class="fa-solid fa-clock-rotate-left"></i>
-                <i class="fa-solid fa-gear" style="margin-left: 20px;"></i>
-            </div>
+            <i class="fa-solid fa-circle-user" style="font-size: 24px; color: #9cd67d;"></i>
         </header>
 
         <main class="scroll-area">
-            
             <section id="home-section" class="tab-content">
-                <h3 class="section-label" style="margin-bottom: 15px; font-size: 18px;">Your Spotify Mix</h3>
-                
-                <div class="grid" id="home-grid">
-                    </div>
-                
+                <div class="grid" id="home-grid"></div>
                 <div id="playlist-view" class="hidden">
                     <div class="back-nav" onclick="closePlaylist()">
-                        <i class="fa-solid fa-chevron-left"></i> <span>Back to Home</span>
+                        <i class="fa-solid fa-chevron-left"></i> <span>Back</span>
                     </div>
-                    <div id="song-list">
-                        </div>
+                    <div id="song-list"></div>
                 </div>
             </section>
 
             <section id="search-section" class="tab-content hidden">
-                <div class="search-container" style="background: #1a1a1a; border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
-                    <i class="fa-solid fa-magnifying-glass" style="color: #9cd67d;"></i>
-                    <input type="text" id="search-input" placeholder="What do you want to listen to?" oninput="searchMusic()" 
-                           style="background: none; border: none; color: #fff; width: 100%; outline: none; font-size: 16px;">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="search-input" placeholder="Search songs..." oninput="searchMusic()">
                 </div>
-                
-                <div id="search-results">
-                    </div>
+                <div id="search-results"></div>
             </section>
 
+            <section id="library-section" class="tab-content hidden">
+                <div class="folder-item">
+                    <div class="folder-icon"><i class="fa-solid fa-heart"></i></div>
+                    <div><h4>Favorites</h4><p>0 songs</p></div>
+                </div>
+                <div class="folder-item">
+                    <div class="folder-icon"><i class="fa-solid fa-circle-down"></i></div>
+                    <div><h4>Downloads</h4><p>Offline</p></div>
+                </div>
+            </section>
         </main>
 
         <div class="mini-player" onclick="openFullPlayer()">
             <div id="yt-player-container" style="display:none"></div>
-            
-            <img id="m-img" src="https://via.placeholder.com/50/222/222?text=Tune" alt="Art">
-            
+            <img id="m-img" src="https://via.placeholder.com/50/222/fff?text=T">
             <div class="mini-meta">
-                <h4 id="m-title">Ready to Play</h4>
-                <p id="m-artist">Choose a category or search</p>
+                <h4 id="m-title">Not Playing</h4>
+                <div id="m-time">0:00 / 0:00</div>
             </div>
-            
             <div class="mini-controls">
                 <i class="fa-solid fa-play" id="m-play-icon" onclick="togglePlay(event)"></i>
-                <i class="fa-solid fa-forward-step" onclick="nextSong(event)"></i>
             </div>
-
-            <div class="mini-seekbar">
-                <div id="mini-progress"></div>
-            </div>
+            <div class="mini-seekbar"><div id="mini-progress"></div></div>
         </div>
 
         <nav class="bottom-nav">
             <div class="nav-item active" onclick="switchTab('home-section', this)">
-                <i class="fa-solid fa-house"></i>
-                <span>Home</span>
+                <i class="fa-solid fa-house"></i><span>Home</span>
             </div>
             <div class="nav-item" onclick="switchTab('search-section', this)">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <span>Search</span>
+                <i class="fa-solid fa-magnifying-glass"></i><span>Search</span>
             </div>
-            <div class="nav-item">
-                <i class="fa-solid fa-lines-leaning"></i>
-                <span>Library</span>
+            <div class="nav-item" onclick="switchTab('library-section', this)">
+                <i class="fa-solid fa-lines-leaning"></i><span>Library</span>
             </div>
         </nav>
 
         <div id="full-player" class="full-player">
-            <header class="player-header" style="width: 100%; padding: 0;">
-                <i class="fa-solid fa-chevron-down" onclick="closeFullPlayer()" style="font-size: 24px;"></i>
-                <span style="font-weight: 600; font-size: 14px;">NOW PLAYING</span>
-                <i class="fa-solid fa-ellipsis-vertical" style="font-size: 20px;"></i>
-            </header>
-
-            <div class="full-art-container" style="width: 100%; text-align: center;">
-                <img id="f-img" class="full-art" src="" onerror="this.src='https://via.placeholder.com/300/1a1a1a/fff?text=OuterTune'">
+            <i class="fa-solid fa-chevron-down" onclick="closeFullPlayer()"></i>
+            <img id="f-img" class="full-art" src="">
+            <h2 id="f-title">Song Title</h2>
+            <p id="f-artist">Artist Name</p>
+            <div class="progress-container" onclick="manualSeek(event)">
+                <div class="progress-bg"><div id="progress-fill"></div></div>
             </div>
-
-            <div class="full-meta" style="width: 100%; text-align: left; margin-bottom: 20px;">
-                <h2 id="f-title" style="font-size: 22px; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Song Title</h2>
-                <p id="f-artist" style="color: #b3b3b3; font-size: 16px;">Artist Name</p>
-            </div>
-
-            <div class="progress-container" id="seek-bar" onclick="manualSeek(event)" style="cursor: pointer;">
-                <div class="progress-bg">
-                    <div id="progress-fill"></div>
-                </div>
-            </div>
-
             <div class="full-controls">
-                <i class="fa-solid fa-shuffle" style="color: #555;"></i>
-                <i class="fa-solid fa-backward-step" onclick="prevSong()" style="font-size: 28px;"></i>
-                
-                <div class="play-btn-big" onclick="togglePlay()">
-                    <i class="fa-solid fa-play" id="f-play-icon"></i>
-                </div>
-                
-                <i class="fa-solid fa-forward-step" onclick="nextSong()" style="font-size: 28px;"></i>
-                <i class="fa-solid fa-repeat" style="color: #555;"></i>
+                <i class="fa-solid fa-backward-step" onclick="prevSong()"></i>
+                <div class="play-btn-big" onclick="togglePlay()"><i class="fa-solid fa-play" id="f-play-icon"></i></div>
+                <i class="fa-solid fa-forward-step" onclick="nextSong()"></i>
             </div>
         </div>
-
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
