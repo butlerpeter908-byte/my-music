@@ -10,7 +10,7 @@
 <body>
     <div class="app-container">
         <header>
-            <h1 id="tab-title">Home</h1>
+            <h1 id="tab-title">OuterTune</h1>
             <i class="fa-solid fa-circle-user" style="font-size: 24px; color: #9cd67d;"></i>
         </header>
 
@@ -26,28 +26,28 @@
             </section>
 
             <section id="search-section" class="tab-content hidden">
-                <div class="search-box">
+                <div style="background: #1a1a1a; padding: 12px; border-radius: 8px; display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="search-input" placeholder="Search songs..." oninput="searchMusic()">
+                    <input type="text" id="search-input" placeholder="Search songs..." oninput="searchMusic()" style="background: none; border: none; color: #fff; outline: none; width: 100%;">
                 </div>
                 <div id="search-results"></div>
             </section>
 
             <section id="library-section" class="tab-content hidden">
-                <div class="folder-item">
+                <div class="folder-item" onclick="showFavorites()">
                     <div class="folder-icon"><i class="fa-solid fa-heart"></i></div>
-                    <div><h4>Favorites</h4><p>0 songs</p></div>
+                    <div><h4>Favorites</h4><p id="fav-count">0 songs</p></div>
                 </div>
                 <div class="folder-item">
                     <div class="folder-icon"><i class="fa-solid fa-circle-down"></i></div>
-                    <div><h4>Downloads</h4><p>Offline</p></div>
+                    <div><h4>Downloads</h4><p>Offline Mode</p></div>
                 </div>
             </section>
         </main>
 
         <div class="mini-player" onclick="openFullPlayer()">
             <div id="yt-player-container" style="display:none"></div>
-            <img id="m-img" src="https://via.placeholder.com/50/222/fff?text=T">
+            <img id="m-img" src="">
             <div class="mini-meta">
                 <h4 id="m-title">Not Playing</h4>
                 <div id="m-time">0:00 / 0:00</div>
@@ -55,7 +55,9 @@
             <div class="mini-controls">
                 <i class="fa-solid fa-play" id="m-play-icon" onclick="togglePlay(event)"></i>
             </div>
-            <div class="mini-seekbar"><div id="mini-progress"></div></div>
+            <div class="mini-seekbar" onclick="handleSeek(event, 'mini-seekbar'); event.stopPropagation();">
+                <div id="mini-progress"></div>
+            </div>
         </div>
 
         <nav class="bottom-nav">
@@ -75,7 +77,7 @@
             <img id="f-img" class="full-art" src="">
             <h2 id="f-title">Song Title</h2>
             <p id="f-artist">Artist Name</p>
-            <div class="progress-container" onclick="manualSeek(event)">
+            <div class="progress-container" onclick="handleSeek(event, 'progress-container')">
                 <div class="progress-bg"><div id="progress-fill"></div></div>
             </div>
             <div class="full-controls">
