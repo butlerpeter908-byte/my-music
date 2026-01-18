@@ -3,7 +3,6 @@ let player, currentList = [], currentIndex = -1, searchTimer;
 let favorites = JSON.parse(localStorage.getItem('favs')) || [];
 let downloads = JSON.parse(localStorage.getItem('dls')) || [];
 
-// YouTube API Setup
 var tag = document.createElement('script');
 tag.src = "https://www.youtube.com/iframe_api";
 document.head.appendChild(tag);
@@ -19,18 +18,18 @@ function onYouTubeIframeAPIReady() {
 }
 
 const playlists = [
-    { name: "Trending", q: "Latest Hindi Songs" },
-    { name: "Lofi Mix", q: "Hindi Lofi Chill" },
-    { name: "90s Hits", q: "90s Bollywood Romantic" },
-    { name: "Global Top", q: "Top International Hits" }
+    { name: "Trending", q: "Latest Hindi Songs 2025", img: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300" },
+    { name: "Lofi Mix", q: "Hindi Lofi Chill Songs", img: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=300" },
+    { name: "Bollywood 90s", q: "90s Bollywood Hits", img: "https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=300" },
+    { name: "Global Hits", q: "Top Billboard Songs", img: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300" }
 ];
 
 function initHome() {
     const grid = document.getElementById('home-grid');
     grid.innerHTML = playlists.map(p => `
-        <div class="card" onclick="openPlaylist('${p.q}')" style="background: #1a1a1a; padding: 20px; border-radius: 15px; text-align: center; cursor: pointer;">
-            <div style="font-size: 40px; margin-bottom: 10px;">🎵</div>
-            <span style="font-weight: bold;">${p.name}</span>
+        <div class="card" onclick="openPlaylist('${p.q}')" style="position: relative; border-radius: 15px; overflow: hidden; aspect-ratio: 1/1;">
+            <img src="${p.img}" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.6;">
+            <div style="position: absolute; bottom: 10px; left: 10px; font-weight: bold; font-size: 16px;">${p.name}</div>
         </div>`).join('');
     updateLibUI();
 }
@@ -67,10 +66,10 @@ function renderSongs(list, targetId) {
         const isFav = favorites.find(f => f.id === vId) ? 'active' : '';
         const isDl = downloads.find(d => d.id === vId) ? 'active' : '';
         return `
-        <div class="list-item" style="display: flex; align-items: center; gap: 15px; padding: 10px; border-bottom: 1px solid #111;">
-            <img src="${s.snippet.thumbnails.default.url}" onclick="playSong(${i})" style="width: 50px; border-radius: 5px;">
-            <div style="flex: 1;" onclick="playSong(${i})">
-                <h4 style="font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;">${s.snippet.title}</h4>
+        <div class="list-item" style="display: flex; align-items: center; gap: 12px; padding: 12px; border-bottom: 1px solid #111;">
+            <img src="${s.snippet.thumbnails.default.url}" onclick="playSong(${i})" style="width: 55px; height: 55px; border-radius: 8px; object-fit: cover;">
+            <div style="flex: 1; overflow: hidden;" onclick="playSong(${i})">
+                <h4 style="font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${s.snippet.title}</h4>
             </div>
             <div style="display: flex; gap: 15px; font-size: 18px;">
                 <i class="fa-solid fa-heart fav-btn ${isFav}" onclick="toggleFav(${i})"></i>
@@ -95,7 +94,9 @@ function manualSeek(e, id) {
     const bar = document.getElementById(id);
     const rect = bar.getBoundingClientRect();
     const pos = (e.clientX - rect.left) / rect.width;
-    player.seekTo(pos * player.getDuration());
+    if(player && player.getDuration) {
+        player.seekTo(pos * player.getDuration());
+    }
 }
 
 function updateProgress() {
@@ -121,7 +122,7 @@ function toggleFav(idx) {
     else favorites.push({id: vId, snippet: s.snippet});
     localStorage.setItem('favs', JSON.stringify(favorites));
     updateLibUI();
-    renderSongs(currentList, document.getElementById('song-list-container').innerHTML ? 'song-list-container' : 'search-results-container');
+    event.target.classList.toggle('active');
 }
 
 function toggleDownload(idx) {
@@ -132,7 +133,7 @@ function toggleDownload(idx) {
     else downloads.push({id: vId, snippet: s.snippet});
     localStorage.setItem('dls', JSON.stringify(downloads));
     updateLibUI();
-    renderSongs(currentList, document.getElementById('song-list-container').innerHTML ? 'song-list-container' : 'search-results-container');
+    event.target.classList.toggle('active');
 }
 
 function showFavorites() {
