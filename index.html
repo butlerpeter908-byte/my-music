@@ -6,6 +6,21 @@
     <title>OuterTune - Premium</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .hidden { display: none !important; }
+        .menu-opt:active { background: #333; }
+        #yt-player-container.video-mode {
+            display: block !important;
+            position: fixed;
+            top: 10%;
+            left: 5%;
+            width: 90%;
+            height: 250px;
+            z-index: 2000;
+            border-radius: 15px;
+            box-shadow: 0 0 20px #000;
+        }
+    </style>
 </head>
 <body>
     <div class="app-container">
@@ -56,11 +71,20 @@
 
             <img id="m-img" src="https://via.placeholder.com/50/1a1a1a/fff?text=OT" style="width: 50px; height: 50px; border-radius: 5px; object-fit: cover;">
             <div class="mini-meta" style="flex: 1; margin-left: 10px;">
-                <h4 id="m-title" style="font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;">Not Playing</h4>
+                <h4 id="m-title" style="font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px;">Not Playing</h4>
                 <div id="m-time" style="font-size: 11px; color: #9cd67d;">0:00 / 0:00</div>
             </div>
-            <div class="mini-controls">
+            
+            <div class="mini-controls" style="display: flex; align-items: center; gap: 12px;">
                 <i class="fa-solid fa-play" id="m-play-icon" onclick="togglePlay(event)" style="font-size: 20px;"></i>
+                <i class="fa-solid fa-ellipsis-vertical" onclick="toggleMiniMenu(event)" style="font-size: 20px; padding: 10px; color: #9cd67d;"></i>
+            </div>
+
+            <div id="mini-popup-menu" class="hidden" style="position: absolute; bottom: 75px; right: 10px; background: #1a1a1a; border: 1px solid #333; border-radius: 12px; width: 190px; z-index: 100; box-shadow: 0 8px 25px rgba(0,0,0,0.7);">
+                <div class="menu-opt" onclick="menuFav(event)" style="padding: 15px; border-bottom: 1px solid #333; display: flex; align-items: center; gap: 12px; font-size: 14px;"><i class="fa-solid fa-heart" style="color: #ff4d4d;"></i> Favorite</div>
+                <div class="menu-opt" onclick="changeSpeed(event)" style="padding: 15px; border-bottom: 1px solid #333; display: flex; align-items: center; gap: 12px; font-size: 14px;"><i class="fa-solid fa-gauge-high"></i> Speed</div>
+                <div class="menu-opt" onclick="switchToVideo(event)" style="padding: 15px; border-bottom: 1px solid #333; display: flex; align-items: center; gap: 12px; font-size: 14px;"><i class="fa-solid fa-video"></i> Switch to Video</div>
+                <div class="menu-opt" onclick="changeQuality(event)" style="padding: 15px; display: flex; align-items: center; gap: 12px; font-size: 14px;"><i class="fa-solid fa-sliders"></i> Quality</div>
             </div>
         </div>
 
