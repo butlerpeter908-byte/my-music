@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>OuterTune</title>
+    <title>OuterTune - Premium</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -26,9 +26,9 @@
             </section>
 
             <section id="search-section" class="tab-content hidden">
-                <div style="background: #1a1a1a; padding: 12px; border-radius: 10px; display: flex; align-items: center; gap: 10px; margin: 15px;">
+                <div class="search-box-ui" style="background: #1a1a1a; padding: 12px; border-radius: 10px; display: flex; align-items: center; gap: 10px; margin: 15px;">
                     <i class="fa-solid fa-magnifying-glass" style="color: #9cd67d;"></i>
-                    <input type="text" id="search-input" placeholder="Search for songs..." oninput="searchMusic()" style="background: none; border: none; color: #fff; outline: none; width: 100%; font-size: 16px;">
+                    <input type="text" id="search-input" placeholder="Search for songs..." oninput="searchMusic()" style="background: none; border: none; color: #fff; outline: none; width: 100%;">
                 </div>
                 <div id="search-results-container"></div>
             </section>
@@ -45,18 +45,22 @@
             </section>
         </main>
 
-        <div class="mini-player" onclick="openFullPlayer()">
+        <div class="mini-player" onclick="openFullPlayer()" style="position: relative; overflow: visible;">
             <div id="yt-player-container" style="display:none"></div>
-            <img id="m-img" src="https://via.placeholder.com/50/1a1a1a/fff?text=OT">
-            <div class="mini-meta">
-                <h4 id="m-title" style="font-size: 13px;">Not Playing</h4>
-                <div id="m-time" style="font-size: 10px; color: #9cd67d;">0:00 / 0:00</div>
+            
+            <div class="mini-seekbar-wrapper" onclick="manualSeek(event, 'm-seek-bar'); event.stopPropagation();" style="position: absolute; top: -5px; left: 0; width: 100%; height: 10px; cursor: pointer; z-index: 10;">
+                <div id="m-seek-bar" style="width: 100%; height: 4px; background: #333;">
+                    <div id="mini-progress" style="height: 100%; background: #9cd67d; width: 0%;"></div>
+                </div>
+            </div>
+
+            <img id="m-img" src="https://via.placeholder.com/50/1a1a1a/fff?text=OT" style="width: 50px; height: 50px; border-radius: 5px; object-fit: cover;">
+            <div class="mini-meta" style="flex: 1; margin-left: 10px;">
+                <h4 id="m-title" style="font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;">Not Playing</h4>
+                <div id="m-time" style="font-size: 11px; color: #9cd67d;">0:00 / 0:00</div>
             </div>
             <div class="mini-controls">
-                <i class="fa-solid fa-play" id="m-play-icon" onclick="togglePlay(event)"></i>
-            </div>
-            <div class="mini-seekbar" id="m-seek-bar" onclick="manualSeek(event, 'm-seek-bar'); event.stopPropagation();" style="position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: #333;">
-                <div id="mini-progress" style="height: 100%; background: #9cd67d; width: 0%;"></div>
+                <i class="fa-solid fa-play" id="m-play-icon" onclick="togglePlay(event)" style="font-size: 20px;"></i>
             </div>
         </div>
 
@@ -68,17 +72,21 @@
 
         <div id="full-player" class="full-player">
             <i class="fa-solid fa-chevron-down" onclick="closeFullPlayer()" style="font-size: 25px;"></i>
-            <img id="f-img" class="full-art" src="">
-            <h2 id="f-title" style="margin: 20px 0 5px; text-align: center;">Song Title</h2>
-            <div class="progress-container" id="f-seek-bar" onclick="manualSeek(event, 'f-seek-bar')" style="width: 100%; height: 5px; background: #333; border-radius: 5px; margin: 25px 0;">
-                <div id="progress-fill" style="height: 100%; background: #9cd67d; width: 0%;"></div>
-            </div>
-            <div class="full-controls" style="display: flex; gap: 40px; align-items: center;">
-                <i class="fa-solid fa-backward-step" onclick="prevSong()" style="font-size: 30px;"></i>
-                <div onclick="togglePlay()" style="width: 70px; height: 70px; background: #fff; color: #000; border-radius: 50%; display: flex; justify-content: center; align-items: center;">
-                    <i class="fa-solid fa-play" id="f-play-icon" style="font-size: 30px;"></i>
+            <img id="f-img" class="full-art" src="" style="width: 80%; aspect-ratio: 1/1; border-radius: 20px; object-fit: cover; margin-top: 20px;">
+            <h2 id="f-title" style="margin: 30px 0 10px; text-align: center; width: 90%;">Song Title</h2>
+            
+            <div class="progress-container" onclick="manualSeek(event, 'f-seek-bar')" style="width: 90%; height: 6px; background: #333; border-radius: 10px; margin: 30px 0;">
+                <div id="f-seek-bar" style="width: 100%; height: 100%;">
+                    <div id="progress-fill" style="height: 100%; background: #9cd67d; border-radius: 10px; width: 0%;"></div>
                 </div>
-                <i class="fa-solid fa-forward-step" onclick="nextSong()" style="font-size: 30px;"></i>
+            </div>
+
+            <div class="full-controls">
+                <i class="fa-solid fa-backward-step" onclick="prevSong()" style="font-size: 35px;"></i>
+                <div onclick="togglePlay()" style="width: 75px; height: 75px; background: #fff; color: #000; border-radius: 50%; display: flex; justify-content: center; align-items: center;">
+                    <i class="fa-solid fa-play" id="f-play-icon" style="font-size: 35px;"></i>
+                </div>
+                <i class="fa-solid fa-forward-step" onclick="nextSong()" style="font-size: 35px;"></i>
             </div>
         </div>
     </div>
