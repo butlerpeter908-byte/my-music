@@ -1,6 +1,7 @@
 const API_KEY = 'AIzaSyBkricU1Xd041GGKd5BUXEXxfYU6fUzVzY';
 let player, currentList = [], currentIndex = -1, searchTimer;
 let favorites = JSON.parse(localStorage.getItem('favs')) || [];
+let downloads = JSON.parse(localStorage.getItem('dls')) || [];
 
 var tag = document.createElement('script');
 tag.src = "https://www.youtube.com/iframe_api";
@@ -18,8 +19,9 @@ function onYouTubeIframeAPIReady() {
 }
 
 const playlists = [
-    { name: "Trending", q: "Latest Hindi Songs", img: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300" },
-    { name: "Lofi", q: "Hindi Lofi", img: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=300" }
+    { name: "Trending", q: "Latest Hindi Songs 2026", img: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300" },
+    { name: "Lofi", q: "Hindi Chill Lofi", img: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=300" },
+    { name: "90s Mix", q: "90s Bollywood Romantic", img: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300" }
 ];
 
 function initHome() {
@@ -50,12 +52,18 @@ async function openPlaylist(q) {
 }
 
 function renderSongs(list, targetId) {
-    document.getElementById(targetId).innerHTML = list.map((s, i) => `
+    document.getElementById(targetId).innerHTML = list.map((s, i) => {
+        const vId = s.id.videoId || s.id;
+        const isFav = favorites.find(f => f.id === vId) ? 'active' : '';
+        return `
         <div class="list-item">
             <img src="${s.snippet.thumbnails.default.url}" onclick="playSong(${i})">
-            <div style="flex:1" onclick="playSong(${i})"><h4>${s.snippet.title}</h4></div>
-            <i class="fa-solid fa-heart" onclick="toggleFav(${i})"></i>
-        </div>`).join('');
+            <div style="flex:1; overflow:hidden;" onclick="playSong(${i})">
+                <h4 style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${s.snippet.title}</h4>
+            </div>
+            <i class="fa-solid fa-heart fav-btn ${isFav}" onclick="toggleFav(${i})" style="font-size:20px; padding:10px;"></i>
+        </div>`;
+    }).join('');
 }
 
 function playSong(i) {
@@ -65,11 +73,11 @@ function playSong(i) {
     player.loadVideoById(vId);
     document.getElementById('m-title').innerText = s.snippet.title;
     document.getElementById('m-img').src = s.snippet.thumbnails.default.url;
-    document.getElementById('f-img').src = s.snippet.thumbnails.high.url;
+    document.getElementById('f-img').src = s.snippet.thumbnails.high ? s.snippet.thumbnails.high.url : s.snippet.thumbnails.default.url;
     document.getElementById('f-title').innerText = s.snippet.title;
 }
 
-// SPEED & VIDEO LOGIC
+// SPEED, LYRICS, MENU
 function setSpeed(val, e) {
     e.stopPropagation();
     player.setPlaybackRate(val);
@@ -77,27 +85,23 @@ function setSpeed(val, e) {
     e.target.classList.add('active');
 }
 
-function switchToVideo(e) {
+function showLyrics(e) {
     e.stopPropagation();
-    const yt = document.getElementById('yt-player-container');
-    if(!yt.classList.contains('video-mode')) {
-        yt.classList.add('video-mode');
-        yt.style.display = 'block';
-        player.setSize(window.innerWidth * 0.9, 200);
-    } else {
-        yt.classList.remove('video-mode');
-        yt.style.display = 'none';
-        player.setSize(0, 0);
-    }
+    if(currentIndex === -1) return alert("Play a song first!");
+    const title = currentList[currentIndex].snippet.title;
+    document.getElementById('lyrics-overlay').style.display = 'flex';
+    document.getElementById('lyric-title').innerText = title;
+    document.getElementById('lyric-content').innerText = "Lyrics not available for this track. Please check back later.";
     document.getElementById('mini-popup-menu').classList.add('hidden');
 }
 
 function toggleMiniMenu(e) { e.stopPropagation(); document.getElementById('mini-popup-menu').classList.toggle('hidden'); }
 
+// PROGRESS & SEEK
 function updateProgress() {
     if(player && player.getDuration && player.getPlayerState() === 1) {
         let curr = player.getCurrentTime(), dur = player.getDuration();
-        let perc = (curr / dur) * 100;
+        let perc = (curr / dur) * 100 || 0;
         document.getElementById('mini-progress').style.width = perc + "%";
         document.getElementById('progress-fill').style.width = perc + "%";
         document.getElementById('m-time').innerText = formatTime(curr) + " / " + formatTime(dur);
@@ -105,6 +109,7 @@ function updateProgress() {
 }
 
 function formatTime(t) { let m = Math.floor(t/60), s = Math.floor(t%60); return m + ":" + (s < 10 ? '0'+s : s); }
+
 function manualSeek(e, id) {
     const bar = document.getElementById(id);
     const rect = bar.getBoundingClientRect();
@@ -112,7 +117,40 @@ function manualSeek(e, id) {
     player.seekTo(pos * player.getDuration());
 }
 
-function togglePlay(e) { if(e) e.stopPropagation(); player.getPlayerState() === 1 ? player.pauseVideo() : player.playVideo(); }
+// LIBRARY
+function toggleFav(idx) {
+    const s = currentList[idx];
+    const vId = s.id.videoId || s.id;
+    const index = favorites.findIndex(f => f.id === vId);
+    if(index > -1) favorites.splice(index, 1);
+    else favorites.push({id: vId, snippet: s.snippet});
+    localStorage.setItem('favs', JSON.stringify(favorites));
+    updateLibUI();
+    renderSongs(currentList, document.querySelector('.tab-content:not(.hidden) div[id$="container"]').id);
+}
+
+function showFavorites() {
+    if(favorites.length === 0) return alert("No Favorites!");
+    currentList = [...favorites];
+    switchTab('home-section', document.querySelectorAll('.nav-item')[0]);
+    document.getElementById('home-grid').classList.add('hidden');
+    document.getElementById('playlist-view').classList.remove('hidden');
+    renderSongs(currentList, 'song-list-container');
+}
+
+function showDownloads() {
+    alert("Download feature coming soon!");
+}
+
+function updateLibUI() {
+    document.getElementById('fav-count').innerText = favorites.length;
+}
+
+// CONTROLS
+function togglePlay(e) { 
+    if(e) e.stopPropagation(); 
+    player.getPlayerState() === 1 ? player.pauseVideo() : player.playVideo(); 
+}
 function nextSong() { if(currentIndex < currentList.length-1) playSong(currentIndex+1); }
 function prevSong() { if(currentIndex > 0) playSong(currentIndex-1); }
 
@@ -128,10 +166,10 @@ function switchTab(id, el) {
     document.getElementById(id).classList.remove('hidden');
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     el.classList.add('active');
+    closePlaylist();
 }
 function openFullPlayer() { document.getElementById('full-player').style.top = '0'; }
 function closeFullPlayer() { document.getElementById('full-player').style.top = '100%'; }
 function closePlaylist() { document.getElementById('home-grid').classList.remove('hidden'); document.getElementById('playlist-view').classList.add('hidden'); }
-function updateLibUI() { document.getElementById('fav-count').innerText = favorites.length; }
 
-document.addEventListener('click', () => document.getElementById('mini-popup-menu').classList.add('hidden'));
+document.addEventListener('click', () => { if(document.getElementById('mini-popup-menu')) document.getElementById('mini-popup-menu').classList.add('hidden'); });
