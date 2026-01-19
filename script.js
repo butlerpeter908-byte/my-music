@@ -2,6 +2,7 @@ const API_KEY = 'AIzaSyBkricU1Xd041GGKd5BUXEXxfYU6fUzVzY';
 let player, currentList = [], currentIndex = -1, searchTimer, sleepTimer;
 let favorites = JSON.parse(localStorage.getItem('favs')) || [];
 
+// 1. YouTube Setup
 var tag = document.createElement('script');
 tag.src = "https://www.youtube.com/iframe_api";
 document.head.appendChild(tag);
@@ -17,36 +18,33 @@ function onYouTubeIframeAPIReady() {
     });
 }
 
+// 2. Fixed Images & Playlists
 const playlists = [
-    { name: "Global Hits", q: "Billboard Hot 100 Official", img: "https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=400" },
-    { name: "Trending Hindi", q: "Latest Hindi Songs 2026", img: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400" },
-    { name: "Chill Lofi", q: "Lofi Hip Hop Chill Mix 2026", img: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=400" },
-    { name: "English Pop", q: "Top Hollywood Pop Hits", img: "https://images.unsplash.com/photo-1514525253361-bee87184919a?w=400" }
+    { name: "Global Hits", q: "Billboard Hot 100 Official", img: "https://images.unsplash.com/photo-1493225255756-d9584f8606e9?auto=format&fit=crop&w=400" },
+    { name: "Trending Hindi", q: "Latest Hindi Songs 2026", img: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=400" },
+    { name: "Hollywood Pop", q: "Hollywood Pop Hits 2026", img: "https://images.unsplash.com/photo-1514525253361-bee87184919a?auto=format&fit=crop&w=400" },
+    { name: "Punjabi Beats", q: "Latest Punjabi Songs 2026", img: "https://images.unsplash.com/photo-1459749411177-042180ce673c?auto=format&fit=crop&w=400" }
 ];
 
 function initHome() {
     const grid = document.getElementById('home-grid');
     grid.innerHTML = playlists.map(p => `
         <div class="card" onclick="fetchPlaylist('${p.q}')">
-            <img src="${p.img}">
+            <img src="${p.img}" loading="lazy">
             <span>${p.name}</span>
         </div>
     `).join('');
     updateFavCount();
 }
 
-// ------------------------------------------------------------------
-// GLOBAL SEARCH FIX: Safari Serena ab Original aayega
-// ------------------------------------------------------------------
+// 3. Global Search Fix (Serena Safari Original)
 async function searchMusic() {
     const q = document.getElementById('search-input').value;
     if(q.length < 3) return;
     clearTimeout(searchTimer);
     searchTimer = setTimeout(async () => {
-        // Query mein -remix -cover aur -shorts add kiya hai taaki ORIGINAL pehle aaye
         const cleanQuery = encodeURIComponent(q + " official audio -remix -cover -shorts");
         const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=${cleanQuery}&type=video&videoEmbeddable=true&relevanceLanguage=en&key=${API_KEY}`;
-        
         const res = await fetch(url);
         const data = await res.json();
         if(data.items) {
@@ -56,6 +54,26 @@ async function searchMusic() {
     }, 600);
 }
 
+// 4. Lyrics Fetcher
+async function showLyrics() {
+    if(currentIndex === -1) return;
+    const songTitle = currentList[currentIndex].snippet.title;
+    const cleanTitle = songTitle.replace(/\[.*?\]|\(.*?\)|Official|Video|Audio|Lyrics/gi, '').trim();
+    
+    document.getElementById('l-title').innerText = cleanTitle;
+    document.getElementById('l-content').innerText = "Fetching lyrics from database...";
+    toggleOverlay('lyrics-overlay');
+
+    try {
+        const response = await fetch(`https://api.lyrics.ovh/v1/${encodeURIComponent(cleanTitle)}`);
+        const data = await response.json();
+        document.getElementById('l-content').innerText = data.lyrics || "Lyrics not found for this track. Try searching with artist name.";
+    } catch (e) {
+        document.getElementById('l-content').innerText = "Could not load lyrics.";
+    }
+}
+
+// 5. Shared Core Logic
 async function fetchPlaylist(q) {
     document.getElementById('home-grid').classList.add('hidden');
     document.getElementById('playlist-view').classList.remove('hidden');
@@ -75,16 +93,16 @@ function renderSongs(list, containerId) {
         <div class="list-item">
             <img src="${s.snippet.thumbnails.default.url}" onclick="playSong(${i})">
             <div style="flex:1" onclick="playSong(${i})">
-                <div style="font-size:14px; font-weight:bold;">${s.snippet.title.substring(0, 50)}</div>
+                <div style="font-size:14px; font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${s.snippet.title}</div>
                 <div style="font-size:11px; color:#888;">${s.snippet.channelTitle}</div>
             </div>
-            <i class="fa-solid fa-heart ${isF ? 'fav-active' : ''}" onclick="toggleFav(${i})" style="padding:10px; font-size:20px; cursor:pointer;"></i>
+            <i class="fa-solid fa-heart ${isF ? 'fav-active' : ''}" onclick="toggleFav(${i})" style="padding:10px; font-size:20px;"></i>
         </div>`;
     }).join('');
 }
 
 function openLibraryFolder() {
-    if(favorites.length === 0) return alert("Library empty!");
+    if(favorites.length === 0) return alert("Library Empty!");
     currentList = [...favorites];
     switchTab('home-section', document.querySelectorAll('.nav-item')[0]);
     document.getElementById('home-grid').classList.add('hidden');
@@ -95,8 +113,7 @@ function openLibraryFolder() {
 function playSong(i) {
     currentIndex = i;
     const s = currentList[i];
-    const vid = s.id.videoId || s.id;
-    player.loadVideoById(vid);
+    player.loadVideoById(s.id.videoId || s.id);
     document.getElementById('m-title').innerText = s.snippet.title;
     document.getElementById('f-title').innerText = s.snippet.title;
     document.getElementById('m-img').src = s.snippet.thumbnails.default.url;
@@ -121,17 +138,21 @@ function switchTab(id, el) {
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     el.classList.add('active');
 }
+
 function backToHome() {
     document.getElementById('home-grid').classList.remove('hidden');
     document.getElementById('playlist-view').classList.add('hidden');
 }
+
 function togglePlay(e) { if(e) e.stopPropagation(); player.getPlayerState() === 1 ? player.pauseVideo() : player.playVideo(); }
+
 function onPlayerStateChange(e) {
     const icon = e.data === 1 ? 'fa-pause' : 'fa-play';
     document.getElementById('m-play-btn').className = 'fa-solid ' + icon;
     document.getElementById('f-play-btn').className = 'fa-solid ' + icon;
     if(e.data === 0) nextSong();
 }
+
 function updateProgress() {
     if(player && player.getDuration && player.getPlayerState() === 1) {
         let curr = player.getCurrentTime(), dur = player.getDuration();
@@ -141,6 +162,7 @@ function updateProgress() {
         document.getElementById('m-time').innerText = formatTime(curr) + " / " + formatTime(dur);
     }
 }
+
 function formatTime(t) { let m = Math.floor(t/60), s = Math.floor(t%60); return m + ":" + (s < 10 ? '0'+s : s); }
 function updateFavCount() { document.getElementById('fav-count').innerText = favorites.length; }
 function toggleMenu(e) { e.stopPropagation(); document.getElementById('mini-popup-menu').classList.toggle('hidden'); }
@@ -149,9 +171,20 @@ function openFullPlayer() { document.getElementById('full-player').style.top = '
 function closeFullPlayer() { document.getElementById('full-player').style.top = '100%'; }
 function nextSong() { if(currentIndex < currentList.length-1) playSong(currentIndex+1); }
 function prevSong() { if(currentIndex > 0) playSong(currentIndex-1); }
+function changeSpeed() { const s = prompt("Speed (0.5 to 2):", "1"); if(s) player.setPlaybackRate(parseFloat(s)); }
+function setTimer(m) { 
+    if(sleepTimer) clearTimeout(sleepTimer);
+    if(m > 0) {
+        sleepTimer = setTimeout(() => { player.pauseVideo(); alert("Timer Done"); }, m * 60000);
+        alert("Timer set for " + m + " mins");
+    }
+    toggleOverlay('timer-menu');
+}
+
 function manualSeek(e) {
     const rect = e.currentTarget.getBoundingClientRect();
     const pos = (e.clientX - rect.left) / rect.width;
     player.seekTo(pos * player.getDuration());
 }
+
 document.addEventListener('click', () => document.getElementById('mini-popup-menu').classList.add('hidden'));
