@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>OuterTune Pro Global Fixed</title>
+    <title>OuterTune Pro Global V3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root { --primary: #9cd67d; --bg: #000; --card: #1a1a1a; }
@@ -12,53 +12,59 @@
         .app-container { height: 100vh; display: flex; flex-direction: column; }
         header { padding: 15px; display: flex; justify-content: space-between; align-items: center; }
         .scroll-area { flex: 1; overflow-y: auto; padding-bottom: 160px; }
+        
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; }
         .card { position: relative; border-radius: 15px; overflow: hidden; aspect-ratio: 1/1; background: var(--card); cursor: pointer; }
-        .card img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; }
-        .card span { position: absolute; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.7); padding: 8px; font-size: 13px; text-align: center; }
+        .card img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
+        .card span { position: absolute; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.7); padding: 8px; font-size: 13px; text-align: center; backdrop-filter: blur(4px); }
+        
         .list-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-bottom: 1px solid #111; }
         .list-item img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; }
         .fav-active { color: #ff4d4d !important; }
+
         .mini-player { position: fixed; bottom: 75px; left: 10px; right: 10px; height: 75px; background: rgba(28,28,30,0.95); backdrop-filter: blur(15px); border-radius: 15px; display: flex; align-items: center; padding: 0 12px; z-index: 1000; border: 1px solid #333; }
-        #mini-seek { position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: #333; }
-        #mini-progress { height: 100%; background: var(--primary); width: 0%; }
+        #mini-seek { position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: #333; border-radius: 10px 10px 0 0; }
+        #mini-progress { height: 100%; background: var(--primary); width: 0%; transition: width 0.1s linear; }
+
+        #mini-popup-menu { position: absolute; bottom: 85px; right: 0; background: #252525; width: 200px; border-radius: 12px; border: 1px solid #444; z-index: 2000; overflow: hidden; box-shadow: 0 10px 30px #000; }
+        .menu-opt { padding: 12px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #333; cursor: pointer; font-size: 14px; }
+
         .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 65px; background: #000; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #222; }
         .nav-item { text-align: center; color: #888; font-size: 11px; flex:1; cursor: pointer; }
         .nav-item.active { color: var(--primary); }
         .nav-item i { font-size: 20px; display: block; margin-bottom: 4px; }
+
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.96); z-index: 4000; display: none; flex-direction: column; align-items: center; padding: 40px 20px; text-align: center; }
         .full-player { position: fixed; top: 100%; left: 0; width: 100%; height: 100%; background: #000; z-index: 3000; transition: 0.4s; display: flex; flex-direction: column; align-items: center; padding-top: 50px; }
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 4000; display: none; flex-direction: column; align-items: center; padding: 40px 20px; }
-        #mini-popup-menu { position: absolute; bottom: 85px; right: 0; background: #252525; width: 200px; border-radius: 12px; border: 1px solid #444; z-index: 2000; overflow: hidden; }
-        .menu-opt { padding: 12px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #333; cursor: pointer; }
     </style>
 </head>
 <body>
     <div class="app-container">
         <header>
-            <h1 style="color:var(--primary)">OuterTune</h1>
-            <i class="fa-solid fa-moon" onclick="toggleOverlay('timer-menu')" style="font-size: 22px;"></i>
+            <h1 style="color:var(--primary); margin:0;">OuterTune</h1>
+            <i class="fa-solid fa-moon" onclick="toggleOverlay('timer-menu')" style="font-size: 22px; color:var(--primary);"></i>
         </header>
 
         <main class="scroll-area">
             <section id="home-section" class="tab-content">
                 <div id="home-grid" class="grid"></div>
                 <div id="playlist-view" class="hidden">
-                    <div onclick="backToHome()" style="padding:15px; color:var(--primary); font-weight:bold; cursor:pointer;"><i class="fa-solid fa-chevron-left"></i> BACK TO EXPLORE</div>
+                    <div onclick="backToHome()" style="padding:15px; color:var(--primary); font-weight:bold; cursor:pointer;"><i class="fa-solid fa-chevron-left"></i> BACK</div>
                     <div id="song-list-container"></div>
                 </div>
             </section>
             
             <section id="search-section" class="tab-content hidden">
-                <div style="background:#1a1a1a; padding:12px; border-radius:12px; margin:15px;">
-                    <input type="text" id="search-input" placeholder="Search (Safari Serena, etc.)" oninput="searchMusic()" style="background:none; border:none; color:#fff; width:100%; outline:none;">
+                <div style="background:#1a1a1a; padding:12px; border-radius:12px; margin:15px; border:1px solid #333;">
+                    <input type="text" id="search-input" placeholder="Search Global Hits..." oninput="searchMusic()" style="background:none; border:none; color:#fff; width:100%; outline:none; font-size:16px;">
                 </div>
                 <div id="search-results-container"></div>
             </section>
 
             <section id="library-section" class="tab-content hidden">
-                <div onclick="openLibraryFolder()" style="padding:20px; border-bottom:1px solid #222; display:flex; justify-content:space-between; cursor:pointer;">
+                <div onclick="openLibraryFolder()" style="padding:20px; border-bottom:1px solid #222; display:flex; justify-content:space-between; cursor:pointer; align-items:center;">
                     <span><i class="fa-solid fa-heart" style="color:#ff4d4d"></i> My Favorites</span>
-                    <span id="fav-count" style="background:var(--primary); color:#000; padding:2px 10px; border-radius:10px;">0</span>
+                    <span id="fav-count" style="background:var(--primary); color:#000; padding:2px 10px; border-radius:10px; font-weight:bold;">0</span>
                 </div>
             </section>
         </main>
@@ -66,9 +72,9 @@
         <div class="mini-player" id="m-player">
             <div id="yt-player-container" style="display:none"></div>
             <div id="mini-seek"><div id="mini-progress"></div></div>
-            <img id="m-img" src="" style="width:48px; height:48px; border-radius:8px;" onclick="openFullPlayer()">
+            <img id="m-img" src="" style="width:48px; height:48px; border-radius:8px; object-fit:cover;" onclick="openFullPlayer()">
             <div style="flex:1; margin-left:12px; overflow:hidden;" onclick="openFullPlayer()">
-                <div id="m-title" style="font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Not Playing</div>
+                <div id="m-title" style="font-size:14px; font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Ready...</div>
                 <div id="m-time" style="font-size:11px; color:var(--primary);">0:00 / 0:00</div>
             </div>
             <i class="fa-solid fa-play" id="m-play-btn" onclick="togglePlay(event)" style="font-size:24px; padding:10px;"></i>
@@ -77,7 +83,7 @@
             <div id="mini-popup-menu" class="hidden">
                 <div class="menu-opt" onclick="showLyrics()"><i class="fa-solid fa-microphone"></i> Lyrics</div>
                 <div class="menu-opt" onclick="toggleOverlay('timer-menu')"><i class="fa-solid fa-clock"></i> Sleep Timer</div>
-                <div class="menu-opt" onclick="changeSpeed()"><i class="fa-solid fa-gauge"></i> Speed</div>
+                <div class="menu-opt" onclick="changeSpeed()"><i class="fa-solid fa-gauge"></i> Playback Speed</div>
             </div>
         </div>
 
@@ -88,23 +94,29 @@
         </nav>
 
         <div id="timer-menu" class="overlay" style="justify-content:center;">
-            <h2>Sleep Timer</h2>
-            <button onclick="setTimer(15)" style="width:80%; padding:15px; margin:10px; background:#222; color:#fff; border:none; border-radius:10px;">15 Mins</button>
-            <button onclick="setTimer(30)" style="width:80%; padding:15px; margin:10px; background:#222; color:#fff; border:none; border-radius:10px;">30 Mins</button>
-            <button onclick="setTimer(0)" style="width:80%; padding:15px; margin:10px; background:#ff4d4d; color:#fff; border:none; border-radius:10px;">OFF</button>
-            <button onclick="toggleOverlay('timer-menu')" style="margin-top:20px; color:#888;">Close</button>
+            <h2 style="color:var(--primary)">Sleep Timer</h2>
+            <button onclick="setTimer(15)" style="width:80%; padding:15px; margin:10px; background:#222; color:#fff; border:none; border-radius:12px;">15 Mins</button>
+            <button onclick="setTimer(30)" style="width:80%; padding:15px; margin:10px; background:#222; color:#fff; border:none; border-radius:12px;">30 Mins</button>
+            <button onclick="setTimer(0)" style="width:80%; padding:15px; margin:10px; background:#ff4d4d; color:#fff; border:none; border-radius:12px;">OFF</button>
+            <button onclick="toggleOverlay('timer-menu')" style="margin-top:20px; color:#888;">Back</button>
+        </div>
+
+        <div id="lyrics-overlay" class="overlay">
+            <h2 id="l-title" style="color:var(--primary); font-size:18px;"></h2>
+            <div id="l-content" style="margin-top:20px; font-size:18px; line-height:1.8; color:#eee; overflow-y:auto; width:100%; white-space: pre-wrap;">Select a song to see lyrics...</div>
+            <button onclick="toggleOverlay('lyrics-overlay')" style="position:fixed; bottom:25px; background:var(--primary); color:#000; padding:12px 35px; border:none; border-radius:25px; font-weight:bold;">CLOSE</button>
         </div>
 
         <div id="full-player" class="full-player">
-            <i class="fa-solid fa-chevron-down" onclick="closeFullPlayer()" style="font-size:30px; margin-bottom:30px;"></i>
-            <img id="f-img" style="width:80%; border-radius:20px;">
-            <h3 id="f-title" style="padding:25px; text-align:center;"></h3>
-            <div style="width:85%; height:5px; background:#333;" onclick="manualSeek(event)">
-                <div id="f-progress" style="height:100%; background:var(--primary); width:0%;"></div>
+            <i class="fa-solid fa-chevron-down" onclick="closeFullPlayer()" style="font-size:30px; margin-bottom:30px; color:#444;"></i>
+            <img id="f-img" style="width:80%; border-radius:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+            <h3 id="f-title" style="padding:25px; text-align:center; width:85%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"></h3>
+            <div style="width:85%; height:5px; background:#333; border-radius:10px;" onclick="manualSeek(event)">
+                <div id="f-progress" style="height:100%; background:var(--primary); width:0%; border-radius:10px;"></div>
             </div>
             <div style="display:flex; gap:50px; margin-top:50px; align-items:center;">
                 <i class="fa-solid fa-backward-step" onclick="prevSong()" style="font-size:30px;"></i>
-                <i class="fa-solid fa-play" id="f-play-btn" onclick="togglePlay()" style="font-size:45px;"></i>
+                <i class="fa-solid fa-play" id="f-play-btn" onclick="togglePlay()" style="font-size:50px;"></i>
                 <i class="fa-solid fa-forward-step" onclick="nextSong()" style="font-size:30px;"></i>
             </div>
         </div>
