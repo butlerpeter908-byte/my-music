@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>OuterTune - Fixed & Lyrics</title>
+    <title>OuterTune Pro - Ultimate Edition</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root { --primary: #9cd67d; --bg: #000; --card: #1a1a1a; }
@@ -13,131 +13,124 @@
         header { padding: 15px; display: flex; justify-content: space-between; align-items: center; }
         .scroll-area { flex: 1; overflow-y: auto; padding-bottom: 160px; }
         
-        /* Grid & List */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; }
-        .card { position: relative; border-radius: 15px; overflow: hidden; aspect-ratio: 1/1; background: var(--card); }
-        .card img { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; }
-        .card span { position: absolute; bottom: 10px; left: 10px; font-weight: bold; }
-        .list-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-bottom: 1px solid #111; }
-        .list-item img { width: 55px; height: 55px; border-radius: 8px; }
+        /* Visualizer */
+        #visualizer { position: absolute; bottom: 0; left: 0; width: 100%; height: 100px; z-index: -1; opacity: 0.5; pointer-events: none; }
 
-        /* MINI PLAYER - Always Visible */
+        /* MINI PLAYER */
         .mini-player {
-            position: fixed;
-            bottom: 75px; left: 10px; right: 10px;
-            height: 70px; background: #1c1c1e;
-            border-radius: 15px; display: flex; align-items: center;
+            position: fixed; bottom: 75px; left: 10px; right: 10px;
+            height: 70px; background: rgba(28, 28, 30, 0.95);
+            backdrop-filter: blur(10px); border-radius: 15px; display: flex; align-items: center;
             padding: 0 12px; z-index: 1000; border: 1px solid #333;
         }
 
-        /* SEEKBAR & DURATION */
         #mini-seek-container { position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: #333; cursor: pointer; border-radius: 15px 15px 0 0; }
         #mini-progress { height: 100%; background: var(--primary); width: 0%; transition: width 0.2s; }
 
         /* POPUP MENU */
         #mini-popup-menu {
             position: absolute; bottom: 80px; right: 0;
-            background: #252525; width: 210px; border-radius: 12px;
+            background: #252525; width: 220px; border-radius: 12px;
             border: 1px solid #444; z-index: 2000; box-shadow: 0 10px 30px #000;
         }
         .menu-opt { padding: 12px 15px; display: flex; align-items: center; gap: 12px; font-size: 14px; cursor: pointer; border-bottom: 1px solid #333; }
-        .speed-btn { background: #333; padding: 4px 8px; border-radius: 5px; font-size: 11px; cursor: pointer; }
-        .speed-btn.active { background: var(--primary); color: #000; }
-
-        /* NAV BAR */
-        .bottom-nav {
-            position: fixed; bottom: 0; width: 100%; height: 65px;
-            background: #000; display: flex; justify-content: space-around;
-            align-items: center; border-top: 1px solid #222; z-index: 1100;
-        }
-        .nav-item { text-align: center; color: #888; font-size: 11px; cursor: pointer; }
-        .nav-item.active { color: var(--primary); }
-        .nav-item i { font-size: 20px; display: block; margin-bottom: 4px; }
-
-        /* LYRICS OVERLAY */
-        #lyrics-overlay {
+        
+        /* LYRICS & TIMER OVERLAYS */
+        .overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); z-index: 4000; display: none;
+            background: rgba(0,0,0,0.98); z-index: 4000; display: none;
             flex-direction: column; align-items: center; padding: 40px 20px;
             overflow-y: auto; text-align: center;
         }
 
-        /* FULL PLAYER */
-        .full-player {
-            position: fixed; top: 100%; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 3000; transition: 0.4s;
-            display: flex; flex-direction: column; align-items: center; padding-top: 50px;
-        }
+        /* GRID */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; }
+        .card { position: relative; border-radius: 15px; overflow: hidden; aspect-ratio: 1/1; background: var(--card); }
+        .card img { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; }
+        .card span { position: absolute; bottom: 10px; left: 10px; font-weight: bold; }
+        
+        /* NAV */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 65px; background: #000; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #222; z-index: 1100; }
+        .nav-item { text-align: center; color: #888; font-size: 11px; }
+        .nav-item.active { color: var(--primary); }
     </style>
 </head>
 <body>
     <div class="app-container">
         <header>
             <h1 style="color:var(--primary)">OuterTune</h1>
-            <i class="fa-solid fa-circle-user" style="font-size: 24px;"></i>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <i class="fa-solid fa-moon" id="timer-btn" onclick="toggleTimerMenu()" style="font-size: 20px;"></i>
+                <i class="fa-solid fa-circle-user" style="font-size: 24px;"></i>
+            </div>
         </header>
 
         <main class="scroll-area">
-            <section id="home-section" class="tab-content">
-                <div id="home-grid" class="grid"></div>
-                <div id="playlist-view" class="hidden">
-                    <div onclick="closePlaylist()" style="padding:15px; color:var(--primary); cursor:pointer;"><i class="fa-solid fa-chevron-left"></i> BACK</div>
-                    <div id="song-list-container"></div>
-                </div>
-            </section>
-            
+            <section id="home-section" class="tab-content"><div id="home-grid" class="grid"></div></section>
             <section id="search-section" class="tab-content hidden">
-                <div style="background:#1a1a1a; padding:12px; border-radius:10px; display:flex; gap:10px; margin:15px;">
-                    <input type="text" id="search-input" placeholder="Search songs..." oninput="searchMusic()" style="background:none; border:none; color:#fff; width:100%; outline:none;">
+                <div style="background:#1a1a1a; padding:12px; border-radius:10px; display:flex; margin:15px;">
+                    <input type="text" id="search-input" placeholder="Search songs (Shorts filtered)..." oninput="searchMusic()" style="background:none; border:none; color:#fff; width:100%; outline:none;">
                 </div>
                 <div id="search-results-container"></div>
             </section>
-
             <section id="library-section" class="tab-content hidden">
-                <div onclick="showFavorites()" style="padding:20px; border-bottom:1px solid #222; display:flex; justify-content:space-between; cursor:pointer;">
-                    <span><i class="fa-solid fa-heart" style="color:#ff4d4d"></i> Favorites</span>
-                    <span id="fav-count">0</span>
-                </div>
-                <div onclick="showDownloads()" style="padding:20px; border-bottom:1px solid #222; display:flex; justify-content:space-between; cursor:pointer;">
-                    <span><i class="fa-solid fa-circle-down" style="color:var(--primary)"></i> Downloads</span>
-                    <span id="dl-count">0</span>
+                <div onclick="showFavorites()" style="padding:20px; border-bottom:1px solid #222;">
+                    <i class="fa-solid fa-heart" style="color:#ff4d4d"></i> Favorites (<span id="fav-count">0</span>)
                 </div>
             </section>
         </main>
 
-        <div class="mini-player" id="mini-player-box">
+        <div class="mini-player" id="mini-player">
             <div id="yt-player-container" style="display:none"></div>
-            
             <div id="mini-seek-container" onclick="manualSeek(event, 'mini-seek-container'); event.stopPropagation();">
                 <div id="mini-progress"></div>
             </div>
-
-            <img id="m-img" src="https://via.placeholder.com/50" style="width:48px; height:48px; border-radius:8px;" onclick="openFullPlayer()">
-            
+            <img id="m-img" src="" style="width:48px; height:48px; border-radius:8px;" onclick="openFullPlayer()">
             <div style="flex:1; margin-left:12px; overflow:hidden;" onclick="openFullPlayer()">
                 <h4 id="m-title" style="margin:0; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Not Playing</h4>
-                <div id="m-time" style="font-size:11px; color:var(--primary); margin-top:2px;">0:00 / 0:00</div>
+                <div id="m-time" style="font-size:11px; color:var(--primary);">0:00 / 0:00</div>
             </div>
-            
-            <div style="display:flex; align-items:center; gap:5px;">
-                <i class="fa-solid fa-play" id="m-play-icon" onclick="togglePlay(event)" style="font-size:22px; padding:10px;"></i>
-                <i class="fa-solid fa-ellipsis-vertical" onclick="toggleMiniMenu(event)" style="font-size:20px; padding:10px; color:var(--primary); cursor:pointer;"></i>
-            </div>
+            <i class="fa-solid fa-play" id="m-play-icon" onclick="togglePlay(event)" style="font-size:22px; padding:10px;"></i>
+            <i class="fa-solid fa-ellipsis-vertical" onclick="toggleMiniMenu(event)" style="font-size:20px; padding:10px; color:var(--primary);"></i>
 
             <div id="mini-popup-menu" class="hidden">
-                <div class="menu-opt" onclick="menuFav(event)"><i class="fa-solid fa-heart" style="color:#ff4d4d"></i> Favorite</div>
-                <div style="padding:12px; border-bottom:1px solid #333;">
-                    <div style="font-size:10px; color:#888; margin-bottom:8px;">SPEED</div>
-                    <div style="display:flex; justify-content:space-between;">
-                        <span class="speed-btn" onclick="setSpeed(0.5, event)">0.5x</span>
-                        <span class="speed-btn active" onclick="setSpeed(1, event)">1x</span>
-                        <span class="speed-btn" onclick="setSpeed(1.5, event)">1.5x</span>
-                        <span class="speed-btn" onclick="setSpeed(2, event)">2x</span>
-                    </div>
-                </div>
-                <div class="menu-opt" onclick="showLyrics(event)"><i class="fa-solid fa-microphone"></i> Lyrics</div>
-                <div class="menu-opt" onclick="changeQuality(event)"><i class="fa-solid fa-sliders"></i> High Quality</div>
+                <div class="menu-opt" onclick="showLyrics()"><i class="fa-solid fa-microphone"></i> Lyrics</div>
+                <div class="menu-opt" onclick="toggleTimerMenu()"><i class="fa-solid fa-clock"></i> Sleep Timer</div>
+                <div class="menu-opt" onclick="setSpeedPrompt()"><i class="fa-solid fa-gauge"></i> Playback Speed</div>
             </div>
+        </div>
+
+        <div id="full-player" class="overlay" style="padding-top: 50px; transition: 0.4s; top: 100%; display: flex;">
+            <canvas id="visualizer"></canvas>
+            <i class="fa-solid fa-chevron-down" onclick="closeFullPlayer()" style="font-size:30px; margin-bottom:20px;"></i>
+            <img id="f-img" style="width:80%; aspect-ratio:1/1; border-radius:20px; object-fit:cover;">
+            <h2 id="f-title" style="padding:20px; font-size:18px;"></h2>
+            <div onclick="manualSeek(event, 'f-seek-bar')" style="width:85%; height:6px; background:#333; margin:20px 0; border-radius:10px;">
+                <div id="f-seek-bar" style="width:100%; height:100%;"><div id="progress-fill" style="height:100%; background:var(--primary); width:0%; border-radius:10px;"></div></div>
+            </div>
+            <div style="display:flex; gap:45px; align-items:center;">
+                <i class="fa-solid fa-backward-step" onclick="prevSong()" style="font-size:30px;"></i>
+                <i class="fa-solid fa-play" id="f-play-icon" onclick="togglePlay()" style="font-size:40px; background:#fff; color:#000; padding:20px; border-radius:50%;"></i>
+                <i class="fa-solid fa-forward-step" onclick="nextSong()" style="font-size:30px;"></i>
+            </div>
+        </div>
+
+        <div id="lyrics-screen" class="overlay">
+            <h2 id="lyric-title" style="color:var(--primary)"></h2>
+            <div id="lyric-content" style="font-size:20px; line-height:1.8; margin-top:30px; padding-bottom: 50px;">Searching...</div>
+            <button onclick="document.getElementById('lyrics-screen').style.display='none'" style="background:var(--primary); border:none; padding:10px 20px; border-radius:20px; font-weight:bold;">Close</button>
+        </div>
+
+        <div id="timer-menu" class="overlay" style="justify-content: center;">
+            <h2>Set Sleep Timer</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;">
+                <button onclick="setTimer(15)" style="padding:15px; background:#222; border:1px solid #444; color:#fff; border-radius:10px;">15 Mins</button>
+                <button onclick="setTimer(30)" style="padding:15px; background:#222; border:1px solid #444; color:#fff; border-radius:10px;">30 Mins</button>
+                <button onclick="setTimer(60)" style="padding:15px; background:#222; border:1px solid #444; color:#fff; border-radius:10px;">1 Hour</button>
+                <button onclick="setTimer(0)" style="padding:15px; background:#ff4d4d; border:none; color:#fff; border-radius:10px;">Off</button>
+            </div>
+            <p id="timer-status" style="margin-top: 20px; color: var(--primary);"></p>
+            <button onclick="toggleTimerMenu()" style="margin-top: 30px; color: #888; background: none; border: none;">Cancel</button>
         </div>
 
         <nav class="bottom-nav">
@@ -145,32 +138,6 @@
             <div class="nav-item" onclick="switchTab('search-section', this)"><i class="fa-solid fa-magnifying-glass"></i>Search</div>
             <div class="nav-item" onclick="switchTab('library-section', this)"><i class="fa-solid fa-lines-leaning"></i>Library</div>
         </nav>
-
-        <div id="full-player" class="full-player">
-            <i class="fa-solid fa-chevron-down" onclick="closeFullPlayer()" style="font-size:30px; margin-bottom:20px; cursor:pointer;"></i>
-            <img id="f-img" style="width:80%; aspect-ratio:1/1; border-radius:20px; object-fit:cover; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
-            <h2 id="f-title" style="text-align:center; padding:20px; font-size:18px;"></h2>
-            
-            <div onclick="manualSeek(event, 'f-seek-bar')" style="width:85%; height:6px; background:#333; margin:30px 0; cursor:pointer; border-radius:10px;">
-                <div id="f-seek-bar" style="width:100%; height:100%;">
-                    <div id="progress-fill" style="height:100%; background:var(--primary); width:0%; border-radius:10px;"></div>
-                </div>
-            </div>
-
-            <div style="display:flex; gap:45px; align-items:center;">
-                <i class="fa-solid fa-backward-step" onclick="prevSong()" style="font-size:30px;"></i>
-                <div onclick="togglePlay()" style="width:70px; height:70px; background:#fff; color:#000; border-radius:50%; display:flex; justify-content:center; align-items:center;">
-                    <i class="fa-solid fa-play" id="f-play-icon" style="font-size:30px;"></i>
-                </div>
-                <i class="fa-solid fa-forward-step" onclick="nextSong()" style="font-size:30px;"></i>
-            </div>
-        </div>
-
-        <div id="lyrics-overlay" onclick="this.style.display='none'">
-            <h2 id="lyric-title" style="color:var(--primary)">Lyrics</h2>
-            <p id="lyric-content" style="font-size:18px; line-height:1.6; color:#ccc; margin-top:20px;">Searching for lyrics...</p>
-            <p style="margin-top:50px; font-size:12px; color:#555;">(Tap anywhere to close)</p>
-        </div>
     </div>
     <script src="script.js"></script>
 </body>
